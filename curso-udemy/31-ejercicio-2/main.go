@@ -4,13 +4,11 @@ import (
 	"fmt"
 )
 
-func main() {
-	a := (42 == 42)
-	b := (42 <= 43)
-	c := (42 >= 45)
-	d := (42 != 43)
-	e := (42 < 46)
-	f := (42 > 43)
+const (
+	a = 42 //constante sin tipo
+	b int = 43 //constante con tipo
+)
 
-	fmt.Printf("%v %v %v %v %v %v\n", a, b, c, d, e, f)
+func main() {
+	fmt.Printf("%v %v\n", a, b)
 }
