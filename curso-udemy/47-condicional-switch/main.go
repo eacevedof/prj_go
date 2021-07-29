@@ -5,9 +5,15 @@ import (
 )
 
 func main() {
-	i := 0
-	for i < 10 {
-		fmt.Println(i)
-		i++
+	switch {
+	case 2==4:
+		fmt.Println("no deberia imprimir")
+	case 3==3:
+		fmt.Println("deberia imprimir")
+		fallthrough //se indica que el siguiente case se ejecute
+	case 4==5:
+		fmt.Println("no deberia")		
+
 	}
 }
+
