@@ -6,7 +6,7 @@ import (
 
 func main() {
 	switch {
-	case 2==4:
+	case 2==4, 4 == 8, 9 == 9:
 		fmt.Println("no deberia imprimir")
 	case 3==3:
 		fmt.Println("deberia imprimir")
