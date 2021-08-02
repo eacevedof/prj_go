@@ -10,7 +10,7 @@ import (
 )
 
 type Task struct {
-	Id      int    `json:"id"`
+	id      int    `json:"id"`
 	Name    string `json:"name"`
 	Content string `json:"content"`
 }
@@ -19,12 +19,12 @@ type Tasks []Task
 
 var tasks = Tasks{
 	{
-		Id:      0,
+		id:      0,
 		Name:    "some name 0",
 		Content: "some-0-content",
 	},
 	{
-		Id:      1,
+		id:      1,
 		Name:    "task one 1",
 		Content: "some content 1",
 	},

@@ -24,4 +24,5 @@ could not import github.com/gorilla/mux (cannot find package "github.com/gorilla
 - peticiones entrantes en mac. El servidor tiene que ir con localhost
 #### 3
 - no me imprime el json
+  - struct field has json tag but is not exported (mensaje en vscode)
   - los tags de la estructura deben empezar con mayusuculas
