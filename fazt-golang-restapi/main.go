@@ -10,7 +10,15 @@ type Task struct {
 	content string `json:content`
 }
 
-type alltasks []Task
+type Tasks []Task
+
+var tasks = Tasks {
+	{
+		id:1,
+		name: "task one",
+		content: "some content"
+	}
+}
 
 func main() {
 	fmt.Println("Hello world")
