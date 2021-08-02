@@ -70,6 +70,29 @@ func select_one(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "tem not found!")
 }
 
+func delete_one(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	//parametro en url
+	taskid, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Fprintf(w, "invalid id")
+		return
+	}
+
+	for i, task := range tasks {
+		if task.Id == taskid {
+			//append(conserva lo q esta antes de la i, y unelo con lo que está despues de la i)
+			tasks = append(tasks[:i], tasks[i+1:]...)
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintf(w, "task with id %v removed", task.Id)
+			return
+		}
+	}
+
+	fmt.Fprintf(w, "tem not found!")
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to my api :)")
 }
@@ -82,8 +105,8 @@ func main() {
 	router.HandleFunc("/tasks", select_all).Methods("GET")
 	router.HandleFunc("/tasks", insert).Methods("POST")
 	router.HandleFunc("/tasks/{id}", select_one).Methods("GET")
+	router.HandleFunc("/tasks/{id}", delete_one).Methods("DELETE")
 
-	//router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
 	//router.HandleFunc("/tasks/{id}", updateTask).Methods("PUT")
 
 	//con esto salta el warning de conexiones entrantes
