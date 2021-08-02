@@ -26,7 +26,7 @@ var tasks = Tasks{
 	},
 }
 
-func create_task(w http.ResponseWriter, r *http.Request) {
+func insert(w http.ResponseWriter, r *http.Request) {
 	var newtask Task
 	reqbody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -43,7 +43,7 @@ func create_task(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newtask)
 }
 
-func get_tasks(w http.ResponseWriter, r *http.Request) {
+func select_all(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tasks)
 }
@@ -55,8 +55,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
-	router.HandleFunc("/tasks", create_task).Methods("POST")
-	router.HandleFunc("/tasks", get_tasks)
+	router.HandleFunc("/tasks", insert).Methods("POST")
+	router.HandleFunc("/tasks", select_all)
 
 	//router.HandleFunc("/tasks/{id}", getOneTask).Methods("GET")
 	//router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
