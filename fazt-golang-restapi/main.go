@@ -1,7 +1,10 @@
 package main
 
 import (
-	"fmt", "mux"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Task struct {
@@ -20,10 +23,15 @@ var tasks = Tasks{
 	},
 }
 
+func YourHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Gorilla!\n"))
+}
+
 func main() {
-	r:= mux.NewRouter()
-	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/products", ProductHandler)
-	r.HandleFunc("/articles", ArticleHandler)
-	fmt.Println("Hello world")
+	r := mux.NewRouter()
+	// Routes consist of a path and a handler function.
+	r.HandleFunc("/", YourHandler)
+
+	// Bind to a port and pass our router in
+	log.Fatal(http.ListenAndServe(":8000", r))
 }
