@@ -16,3 +16,5 @@
   - habia que iniciar el proyecto con `go mod init go-api`
 #### 2
 - peticiones entrantes en mac. El servidor tiene que ir con localhost
+#### 3
+- no me imprime el json

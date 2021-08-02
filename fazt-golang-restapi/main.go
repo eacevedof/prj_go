@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,6 +25,11 @@ var tasks = Tasks{
 	},
 }
 
+func get_tasks(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(tasks)
+	json.NewEncoder(w).Encode(tasks)
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to my api :)")
 }
@@ -31,6 +37,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
+	router.HandleFunc("/tasks", get_tasks)
 
 	//con esto salta el warning de conexiones entrantes
 	//log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
