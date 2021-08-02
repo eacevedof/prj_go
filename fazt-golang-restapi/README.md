@@ -1,4 +1,5 @@
 #### Fazt - Rest API con go
+- [Código original](https://github.com/FaztWeb/golang-restapi-crud/blob/master/main.go)
 
 - servidor:
   - módulo go mux
