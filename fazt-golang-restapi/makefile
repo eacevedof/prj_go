@@ -1,2 +1,2 @@
 server:
-	go run main.go
+	CompileDaemon -command="go run main.go"

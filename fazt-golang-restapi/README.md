@@ -5,6 +5,9 @@
   - go get -u github.com/gorilla/mux
     - descarga y permite importarlo
 
+- refrescador de servidor (hot-reload):
+  - go get github.com/githubnemo/CompileDaemon
+
 #### errores
 #### 1
 - go run main.go 
