@@ -56,7 +56,7 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
 	router.HandleFunc("/tasks", insert).Methods("POST")
-	router.HandleFunc("/tasks", select_all)
+	router.HandleFunc("/tasks", select_all).Methods("GET")
 
 	//router.HandleFunc("/tasks/{id}", getOneTask).Methods("GET")
 	//router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
