@@ -3,6 +3,7 @@
 - servidor:
   - módulo go mux
   - go get -u github.com/gorilla/mux
+    - descarga y permite importarlo
 
 #### errores
 #### 1
