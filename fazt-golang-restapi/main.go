@@ -25,12 +25,14 @@ var tasks = Tasks{
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to my api")
+	fmt.Fprintf(w, "Welcome to my api :)")
 }
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	//con esto salta el warning de conexiones entrantes
+	//log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
+	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }
