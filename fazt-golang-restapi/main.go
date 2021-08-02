@@ -12,12 +12,12 @@ type Task struct {
 
 type Tasks []Task
 
-var tasks = Tasks {
+var tasks = Tasks{
 	{
-		id:1,
-		name: "task one",
-		content: "some content"
-	}
+		id:      1,
+		name:    "task one",
+		content: "some content",
+	},
 }
 
 func main() {
