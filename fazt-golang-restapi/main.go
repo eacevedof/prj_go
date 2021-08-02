@@ -17,7 +17,7 @@ type Task struct {
 
 type Tasks []Task
 
-var tasksx = Tasks{
+var tasks = Tasks{
 	{
 		Id:      0,
 		Name:    "some name 0",
@@ -32,7 +32,7 @@ var tasksx = Tasks{
 
 func get_tasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tasksx)
+	json.NewEncoder(w).Encode(tasks)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
