@@ -2,4 +2,4 @@
 
 - servidor:
   - módulo go mux
-  - go get -m github.com/gorilla/mux
+  - go get -u github.com/gorilla/mux
