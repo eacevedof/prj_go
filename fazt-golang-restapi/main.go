@@ -55,8 +55,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
-	router.HandleFunc("/tasks", insert).Methods("POST")
+
+	// TASKS
 	router.HandleFunc("/tasks", select_all).Methods("GET")
+	router.HandleFunc("/tasks", insert).Methods("POST")
 
 	//router.HandleFunc("/tasks/{id}", getOneTask).Methods("GET")
 	//router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
