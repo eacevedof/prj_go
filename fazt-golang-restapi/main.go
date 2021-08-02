@@ -55,7 +55,7 @@ func select_one(w http.ResponseWriter, r *http.Request) {
 	//parametro en url
 	taskid, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		fmt.Fprintf(w, "Invalid ID")
+		fmt.Fprintf(w, "invalid id")
 		return
 	}
 
@@ -63,6 +63,37 @@ func select_one(w http.ResponseWriter, r *http.Request) {
 		if task.Id == taskid {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(task)
+			return
+		}
+	}
+
+	fmt.Fprintf(w, "tem not found!")
+}
+
+func update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskid, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Fprintf(w, "invalid id")
+		return
+	}
+
+	var uptask Task
+
+	repbody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprint(w, "please enter valid data")
+	}
+	json.Unmarshal(repbody, &uptask)
+
+	for i, task := range tasks {
+		if task.Id == taskid {
+
+			tasks = append(tasks[:i], tasks[i+1:]...)
+			uptask.Id = taskid
+			tasks = append(tasks, uptask)
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintf(w, "task with id %v has been updated", taskid)
 			return
 		}
 	}
@@ -106,8 +137,7 @@ func main() {
 	router.HandleFunc("/tasks", insert).Methods("POST")
 	router.HandleFunc("/tasks/{id}", select_one).Methods("GET")
 	router.HandleFunc("/tasks/{id}", delete_one).Methods("DELETE")
-
-	//router.HandleFunc("/tasks/{id}", updateTask).Methods("PUT")
+	router.HandleFunc("/tasks/{id}", update).Methods("PUT")
 
 	//con esto salta el warning de conexiones entrantes
 	//log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
