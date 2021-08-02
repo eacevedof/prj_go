@@ -10,24 +10,29 @@ import (
 )
 
 type Task struct {
-	id      int    `json:id`
-	name    string `json:name`
-	content string `json:content`
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	Content string `json:"content"`
 }
 
 type Tasks []Task
 
-var tasks = Tasks{
+var tasksx = Tasks{
 	{
-		id:      1,
-		name:    "task one",
-		content: "some content",
+		Id:      0,
+		Name:    "some name 0",
+		Content: "some-0-content",
+	},
+	{
+		Id:      1,
+		Name:    "task one 1",
+		Content: "some content 1",
 	},
 }
 
 func get_tasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tasks)
+	json.NewEncoder(w).Encode(tasksx)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
