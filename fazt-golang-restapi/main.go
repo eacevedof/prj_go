@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"fmt", "mux"
 )
 
 type Task struct {
@@ -21,5 +21,9 @@ var tasks = Tasks{
 }
 
 func main() {
+	r:= mux.NewRouter()
+	r.HandleFunc("/", HomeHandler)
+	r.HandleFunc("/products", ProductHandler)
+	r.HandleFunc("/articles", ArticleHandler)
 	fmt.Println("Hello world")
 }
