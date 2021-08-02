@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -48,6 +49,27 @@ func select_all(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tasks)
 }
 
+func select_one(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	//parametro en url
+	taskid, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Fprintf(w, "Invalid ID")
+		return
+	}
+
+	for _, task := range tasks {
+		if task.Id == taskid {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(task)
+			return
+		}
+	}
+
+	fmt.Fprintf(w, "tem not found!")
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to my api :)")
 }
@@ -59,8 +81,8 @@ func main() {
 	// TASKS
 	router.HandleFunc("/tasks", select_all).Methods("GET")
 	router.HandleFunc("/tasks", insert).Methods("POST")
+	router.HandleFunc("/tasks/{id}", select_one).Methods("GET")
 
-	//router.HandleFunc("/tasks/{id}", getOneTask).Methods("GET")
 	//router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
 	//router.HandleFunc("/tasks/{id}", updateTask).Methods("PUT")
 
