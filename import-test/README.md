@@ -1,3 +1,5 @@
+- [call-module](https://golang.org/doc/tutorial/call-module-code)
+
 #### 1
 ```
 cd hello; go run hello.go
