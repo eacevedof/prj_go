@@ -1,4 +1,4 @@
-module go-api
+module eaf
 
 go 1.16
 

@@ -3,12 +3,12 @@ package main
 import (
 	"log"
 	"net/http"
-	"services/crud"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
 
