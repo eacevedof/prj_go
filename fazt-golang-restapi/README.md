@@ -26,3 +26,7 @@ could not import github.com/gorilla/mux (cannot find package "github.com/gorilla
 - no me imprime el json
   - **struct field has json tag but is not exported** (mensaje en vscode)
   - los tags de la estructura deben empezar con mayusuculas, pq de lo contrario los entiende como campos privados
+
+#### 4
+- go: crud@v0.0.0 (replaced by ./crud): reading crud/go.mod: open /Users/<user>/projects/prj_go/fazt-golang-restapi/crud/go.mod: no such file or directory
+  - Esto pasa porque la carpeta ./crud la entiende como un módulo y para esto debe contar con su fichero go.mod 
