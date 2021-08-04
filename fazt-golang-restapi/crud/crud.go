@@ -26,7 +26,7 @@ var tasks = Tasks{
 	},
 }
 
-func insert(w http.ResponseWriter, r *http.Request) {
+func Insert(w http.ResponseWriter, r *http.Request) {
 	var newtask Task
 	reqbody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -43,12 +43,12 @@ func insert(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newtask)
 }
 
-func select_all(w http.ResponseWriter, r *http.Request) {
+func Select_all(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tasks)
 }
 
-func select_one(w http.ResponseWriter, r *http.Request) {
+func Select_one(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	//parametro en url
@@ -69,7 +69,7 @@ func select_one(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "tem not found!")
 }
 
-func update(w http.ResponseWriter, r *http.Request) {
+func Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	taskid, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -100,7 +100,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "tem not found!")
 }
 
-func delete_one(w http.ResponseWriter, r *http.Request) {
+func Delete_one(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	//parametro en url
@@ -123,6 +123,11 @@ func delete_one(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "tem not found!")
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
+func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to my api :)")
+}
+
+
+func GetTasks() []Task {
+    return tasks
 }

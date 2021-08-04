@@ -5,16 +5,20 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"crud"
+
+	"github.com/gorilla/mux"
 )
+
+
 
 func main() {
 	host := "localhost"
 	port := "3001"
 
+
 	router := mux.NewRouter().StrictSlash(true)
-	//router.HandleFunc("/", index)
+	router.HandleFunc("/", crud.Index)
 
 	// TASKS
 	/*
