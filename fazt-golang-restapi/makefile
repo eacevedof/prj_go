@@ -1,7 +1,7 @@
 compile:
 	go run main.go
 server:
-	CompileDaemon -command="./go-api"
+	CompileDaemon -command="./eaf"
 
 init:
 	# rm go.mod; go mod init eaf
