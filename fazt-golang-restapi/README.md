@@ -32,5 +32,5 @@ could not import github.com/gorilla/mux (cannot find package "github.com/gorilla
   - Esto pasa porque la carpeta ./crud la entiende como un módulo y para esto debe contar con su fichero go.mod 
 
 #### 5
-- cannot refer to unexported name crud.selectAll
+- cannot refer to unexported name crud.SelectAll
   - el metodo debe empezar con mayusuclas para poder ser exportado 

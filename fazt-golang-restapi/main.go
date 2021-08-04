@@ -17,10 +17,10 @@ func main() {
 	router.HandleFunc("/", crud.Index)
 
 	// TASKS
-	router.HandleFunc("/tasks", crud.selectAll).Methods("GET")
+	router.HandleFunc("/tasks", crud.SelectAll).Methods("GET")
 	router.HandleFunc("/tasks", crud.Insert).Methods("POST")
-	router.HandleFunc("/tasks/{id}", crud.selectOne).Methods("GET")
-	router.HandleFunc("/tasks/{id}", crud.deleteOne).Methods("DELETE")
+	router.HandleFunc("/tasks/{id}", crud.SelectOne).Methods("GET")
+	router.HandleFunc("/tasks/{id}", crud.DeleteOne).Methods("DELETE")
 	router.HandleFunc("/tasks/{id}", crud.Update).Methods("PUT")
 
 
