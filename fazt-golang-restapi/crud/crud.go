@@ -43,12 +43,12 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newtask)
 }
 
-func Select_all(w http.ResponseWriter, r *http.Request) {
+func selectAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tasks)
 }
 
-func Select_one(w http.ResponseWriter, r *http.Request) {
+func selectOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	//parametro en url
@@ -100,7 +100,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "tem not found!")
 }
 
-func Delete_one(w http.ResponseWriter, r *http.Request) {
+func deleteOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	//parametro en url
@@ -125,9 +125,4 @@ func Delete_one(w http.ResponseWriter, r *http.Request) {
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to my api :)")
-}
-
-
-func GetTasks() []Task {
-    return tasks
 }

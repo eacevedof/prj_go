@@ -30,3 +30,7 @@ could not import github.com/gorilla/mux (cannot find package "github.com/gorilla
 #### 4
 - go: crud@v0.0.0 (replaced by ./crud): reading crud/go.mod: open /Users/<user>/projects/prj_go/fazt-golang-restapi/crud/go.mod: no such file or directory
   - Esto pasa porque la carpeta ./crud la entiende como un módulo y para esto debe contar con su fichero go.mod 
+
+#### 5
+- cannot refer to unexported name crud.selectAll
+  - el metodo debe empezar con mayusuclas para poder ser exportado 
