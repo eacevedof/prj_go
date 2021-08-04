@@ -15,4 +15,4 @@ init-main:
 	go mod init eaf; go mod tidy
 
 init-crud:
-	rm -f go.*; go mod init crud; go mod tidy
+	cd crud; rm -f go.*; go mod init crud; go mod tidy
