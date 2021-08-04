@@ -1,10 +1,9 @@
 compile:
 	go run main.go
-
 server:
-	CompileDaemon -command="./crud"
+	CompileDaemon -command="./eaf"
 
 init:
-	rm go.mod; rm go.sum; rm -f crud
-	go mod init crud
+	# rm go.mod; go mod init eaf
+	cd services/crud; rm go.mod; go mod init eaf/services/crud
 	go mod tidy
