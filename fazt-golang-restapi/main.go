@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	//"./services/crud"
 )
 
 func main() {
+	host := "localhost"
+	port := "3001"
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
@@ -21,5 +25,5 @@ func main() {
 
 	//con esto salta el warning de conexiones entrantes
 	//log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
-	log.Fatal(http.ListenAndServe("localhost:8000", router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%v:%v", host, port), router))
 }
