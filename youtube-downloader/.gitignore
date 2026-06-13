@@ -1,0 +1,25 @@
+# Bundled external binaries (downloaded, ~200 MB) — not versioned
+/bin/
+
+# Probe/dev material (downloaded audio + captions)
+/_probe/
+
+# Generated data (source audio, mp3 clips, manifests) — keep dir tree, ignore contents
+/data/**
+!/data/**/
+!/data/**/.gitkeep
+
+# Runtime logs — keep dir, ignore contents
+/logs/**
+!/logs/**/
+!/logs/**/.gitkeep
+
+# Legacy output dir
+/output/
+
+# Go build artifacts
+/extractor
+/extractor.exe
+*.exe
+*.test
+*.out
