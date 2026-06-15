@@ -1,27 +1,26 @@
 package extractsubtitlephrases
 
-import "youtube-downloader/ddd/extractor/domain/entities"
-
 // ExtractSubtitlePhrasesResultDto is returned by the use case service.
 type ExtractSubtitlePhrasesResultDto struct {
-	phrases []entities.Phrase
+	count   int
+	phrases []map[string]any
 }
 
-// NewExtractSubtitlePhrasesResultDto builds the result from segmented phrases.
-func NewExtractSubtitlePhrasesResultDto(phrases []entities.Phrase) *ExtractSubtitlePhrasesResultDto {
-	return &ExtractSubtitlePhrasesResultDto{phrases: phrases}
+// NewExtractSubtitlePhrasesResultDto builds the result from primitive phrase maps.
+func NewExtractSubtitlePhrasesResultDto(count int, phrases []map[string]any) *ExtractSubtitlePhrasesResultDto {
+	return &ExtractSubtitlePhrasesResultDto{count: count, phrases: phrases}
 }
 
-// Phrases returns the re-segmented phrases.
-func (d *ExtractSubtitlePhrasesResultDto) Phrases() []entities.Phrase { return d.phrases }
+// Phrases returns the re-segmented phrases as primitive maps.
+func (d *ExtractSubtitlePhrasesResultDto) Phrases() []map[string]any { return d.phrases }
 
 // Count returns how many phrases were extracted.
-func (d *ExtractSubtitlePhrasesResultDto) Count() int { return len(d.phrases) }
+func (d *ExtractSubtitlePhrasesResultDto) Count() int { return d.count }
 
 // ToPrimitives serializes the result so a controller can print it.
 func (d *ExtractSubtitlePhrasesResultDto) ToPrimitives() map[string]any {
 	return map[string]any{
-		"count":   len(d.phrases),
+		"count":   d.count,
 		"phrases": d.phrases,
 	}
 }

@@ -16,12 +16,12 @@ type ExtractSubtitlePhrasesService struct {
 	phraseSegmenter              *services.PhraseSegmenter
 }
 
-// NewExtractSubtitlePhrasesService wires its collaborators. This single explicit
-// place declaring dependencies makes a future move to a DI container mechanical.
-func NewExtractSubtitlePhrasesService() *ExtractSubtitlePhrasesService {
+// GetInstance wires collaborators. Each call returns a fresh instance; a later
+// move to a DI container is mechanical — dependencies are declared here.
+func GetInstance() *ExtractSubtitlePhrasesService {
 	return &ExtractSubtitlePhrasesService{
-		subtitlesReaderVttRepository: repositories.NewSubtitlesReaderVttRepository(),
-		phraseSegmenter:              services.NewPhraseSegmenter(),
+		subtitlesReaderVttRepository: repositories.GetInstance(),
+		phraseSegmenter:              services.GetInstance(),
 	}
 }
 
@@ -37,9 +37,17 @@ func (s *ExtractSubtitlePhrasesService) Invoke(extractSubtitlePhrasesDto *Extrac
 		return nil, err
 	}
 
-	return NewExtractSubtitlePhrasesResultDto(
-		s.phraseSegmenter.Segment(wordStream.Words, wordStream.FinalEndMs),
-	), nil
+	segmented := s.phraseSegmenter.Segment(wordStream.Words, wordStream.FinalEndMs)
+	phrases := make([]map[string]any, len(segmented))
+	for i, p := range segmented {
+		phrases[i] = map[string]any{
+			"index":    p.Index,
+			"text":     p.Text,
+			"start_ms": p.StartMs,
+			"end_ms":   p.EndMs,
+		}
+	}
+	return NewExtractSubtitlePhrasesResultDto(len(segmented), phrases), nil
 }
 
 // failIfWrongInput validates the input before any repository is touched.

@@ -27,8 +27,8 @@ var (
 // SubtitlesReaderVttRepository reads YouTube auto-caption WebVTT files.
 type SubtitlesReaderVttRepository struct{}
 
-// NewSubtitlesReaderVttRepository returns a ready-to-use reader.
-func NewSubtitlesReaderVttRepository() *SubtitlesReaderVttRepository {
+// GetInstance returns a ready-to-use reader.
+func GetInstance() *SubtitlesReaderVttRepository {
 	return &SubtitlesReaderVttRepository{}
 }
 

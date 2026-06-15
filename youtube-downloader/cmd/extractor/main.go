@@ -14,7 +14,7 @@ func main() {
 	lang := flag.String("lang", "nl", "subtitle language code")
 	flag.Parse()
 
-	os.Exit(commands.NewExtractSubtitlePhrasesCommand().Execute(map[string]string{
+	os.Exit(commands.GetInstance().Execute(map[string]string{
 		"subtitle_path": *subtitlePath,
 		"lang":          *lang,
 	}))

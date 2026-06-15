@@ -15,7 +15,7 @@ func TestExtractSubtitlePhrasesServiceReal(t *testing.T) {
 		t.Skipf("probe vtt not present: %v", err)
 	}
 
-	resultDto, err := NewExtractSubtitlePhrasesService().Invoke(
+	resultDto, err := GetInstance().Invoke(
 		FromPrimitives(map[string]string{"subtitle_path": path, "lang": "nl"}),
 	)
 	if err != nil {
@@ -29,15 +29,23 @@ func TestExtractSubtitlePhrasesServiceReal(t *testing.T) {
 	phrases := resultDto.Phrases()
 	for i := 0; i < 10 && i < len(phrases); i++ {
 		p := phrases[i]
-		t.Logf("%3d [%7.2fs -> %7.2fs] %s", p.Index, p.StartSec(), p.EndSec(), p.Text)
+		idx, _ := p["index"].(int)
+		text, _ := p["text"].(string)
+		startMs, _ := p["start_ms"].(int)
+		endMs, _ := p["end_ms"].(int)
+		t.Logf("%3d [%7.2fs -> %7.2fs] %s", idx, float64(startMs)/1000, float64(endMs)/1000, text)
 	}
 
 	for _, p := range phrases {
-		if p.EndMs <= p.StartMs {
-			t.Errorf("phrase %d has non-positive duration: %d..%d", p.Index, p.StartMs, p.EndMs)
+		startMs, _ := p["start_ms"].(int)
+		endMs, _ := p["end_ms"].(int)
+		idx, _ := p["index"].(int)
+		text, _ := p["text"].(string)
+		if endMs <= startMs {
+			t.Errorf("phrase %d has non-positive duration: %d..%d", idx, startMs, endMs)
 		}
-		if p.Text == "" {
-			t.Errorf("phrase %d has empty text", p.Index)
+		if text == "" {
+			t.Errorf("phrase %d has empty text", idx)
 		}
 	}
 }

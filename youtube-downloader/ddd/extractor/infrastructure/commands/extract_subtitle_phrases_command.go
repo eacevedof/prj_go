@@ -18,10 +18,10 @@ type ExtractSubtitlePhrasesCommand struct {
 	extractSubtitlePhrasesService *extractsubtitlephrases.ExtractSubtitlePhrasesService
 }
 
-// NewExtractSubtitlePhrasesCommand wires the command to its service.
-func NewExtractSubtitlePhrasesCommand() *ExtractSubtitlePhrasesCommand {
+// GetInstance wires the command to its service.
+func GetInstance() *ExtractSubtitlePhrasesCommand {
 	return &ExtractSubtitlePhrasesCommand{
-		extractSubtitlePhrasesService: extractsubtitlephrases.NewExtractSubtitlePhrasesService(),
+		extractSubtitlePhrasesService: extractsubtitlephrases.GetInstance(),
 	}
 }
 

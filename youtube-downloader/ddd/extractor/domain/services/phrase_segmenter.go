@@ -15,8 +15,8 @@ import (
 // sentence-ending punctuation, giving precise per-phrase start/end times.
 type PhraseSegmenter struct{}
 
-// NewPhraseSegmenter returns a ready-to-use segmenter.
-func NewPhraseSegmenter() *PhraseSegmenter { return &PhraseSegmenter{} }
+// GetInstance returns a ready-to-use segmenter.
+func GetInstance() *PhraseSegmenter { return &PhraseSegmenter{} }
 
 // Segment normalizes words and splits them into phrases. finalEndMs closes the
 // last phrase (and any phrase whose next-word timestamp is missing).
