@@ -1,7 +1,6 @@
 # yt-downloader — puntero
 
-Descargador de YouTube por consola en **Go** (DDD, patrón `task-go`), sin API ni BD. Sustituye al PoC
-`youtube-downloader/` del monorepo `prj_go`.
+Descargador de YouTube por consola en **Go** (DDD, patrón `task-go`), sin API ni BD.
 
 - Stack: Go 1.26 · `kkdai/youtube/v2` · `ffmpeg` (solo audio).
 - Arranque/test: `README.md` de este repo (`make build` · `make console c="help"` · `make test`).

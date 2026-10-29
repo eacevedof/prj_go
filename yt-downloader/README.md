@@ -1,9 +1,5 @@
 # yt-downloader
 
-Descargador de YouTube por consola en Go, con la arquitectura DDD de `task-go` (prj-task-cruds): `cmd/console` →
-`console/commands.go` → `src/modules/videos/{application,domain,infrastructure}`. Sin API ni BD.
-Sustituye al PoC `youtube-downloader/` (legacy).
-
 ## 1 - instalación
 
 ### 1.1 Windows (sin `make`)
