@@ -17,16 +17,6 @@ Sustituye al PoC `youtube-downloader/` (legacy).
 4. Comprobar: `.\build\console.exe help` debe listar los comandos.
 5. (Opcional) Revisar `.env` — ver §2.3; con los valores por defecto ya funciona.
 
-Si no se quiere usar el `.bat`, los mismos pasos a mano:
-
-```
-winget install --id GoLang.Go -e
-winget install --id Gyan.FFmpeg -e
-go mod download
-copy .env.example .env
-go build -o build\console.exe .\cmd\console
-```
-
 ### 1.2 Linux / WSL / macOS
 
 6. Instalar Go ≥ 1.26 (`https://go.dev/dl/`) y `ffmpeg` (`apt install ffmpeg` · `brew install ffmpeg`).
