@@ -1,0 +1,14 @@
+.vscode
+.idea
+
+.env
+.env.local
+
+# binarios (go build -o build/...)
+build/*
+!build/.gitkeep
+
+# storage: logs y descargas se generan; se conserva el esqueleto
+storage/**/*
+!storage/**/
+!storage/**/.gitkeep

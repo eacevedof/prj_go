@@ -1,0 +1,74 @@
+package configuration
+
+import (
+	"os"
+	"strconv"
+	"strings"
+	"sync"
+
+	"yt-downloader-go/src/core/boot"
+	"yt-downloader-go/src/modules/shared/domain/enums"
+)
+
+const (
+	APP_VERSION        = "0.1.0"
+	APP_VERSION_UPDATE = "2026-10-29"
+)
+
+// EnvironmentReaderRawRepository fuente UNICA de lectura de entorno: un getter semantico por cada clave del .env
+// que la app consume (claves en AppEnvKeyEnum).
+type EnvironmentReaderRawRepository struct{}
+
+var (
+	instance     *EnvironmentReaderRawRepository
+	instanceOnce sync.Once
+)
+
+func GetInstance() *EnvironmentReaderRawRepository {
+	instanceOnce.Do(func() {
+		instance = &EnvironmentReaderRawRepository{}
+	})
+	return instance
+}
+
+func (e *EnvironmentReaderRawRepository) GetAppVersion() string {
+	return APP_VERSION
+}
+
+func (e *EnvironmentReaderRawRepository) GetAppName() string {
+	return e.get(enums.AppEnvKeyEnum.APP_NAME)
+}
+
+func (e *EnvironmentReaderRawRepository) GetLogPath() string {
+	return e.get(enums.AppEnvKeyEnum.APP_LOG_PATH)
+}
+
+func (e *EnvironmentReaderRawRepository) GetDownloadsPath() string {
+	return e.get(enums.AppEnvKeyEnum.APP_DOWNLOADS_PATH)
+}
+
+func (e *EnvironmentReaderRawRepository) GetEnvironment() string {
+	return e.get(enums.AppEnvKeyEnum.APP_ENV)
+}
+
+func (e *EnvironmentReaderRawRepository) IsProduction() bool {
+	return e.GetEnvironment() == boot.ENV.PRODUCTION
+}
+
+func (e *EnvironmentReaderRawRepository) IsLocal() bool {
+	return e.GetEnvironment() == boot.ENV.LOCAL
+}
+
+// IsDebug filter_var(FILTER_VALIDATE_BOOLEAN): "1", "true", "on", "yes".
+func (e *EnvironmentReaderRawRepository) IsDebug() bool {
+	debug := strings.ToLower(e.get(enums.AppEnvKeyEnum.APP_DEBUG))
+	if debug == "on" || debug == "yes" {
+		return true
+	}
+	isDebug, _ := strconv.ParseBool(debug)
+	return isDebug
+}
+
+func (e *EnvironmentReaderRawRepository) get(key string) string {
+	return strings.TrimSpace(os.Getenv(key))
+}
