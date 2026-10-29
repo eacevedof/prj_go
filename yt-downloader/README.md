@@ -44,7 +44,8 @@ Windows (`cmd` / PowerShell, con `.\` delante; en **Git Bash** usar `./build/con
 ```
 .\build\console.exe help
 .\build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
-.\build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=D:\videos
+.\build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best
+.\build\console.exe video-download --url=dQw4w9WgXcQ --format=video --output=..\mis-videos
 .\build\console.exe video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion
 go test -count=1 ./...
 ```
@@ -54,12 +55,14 @@ Linux / WSL / macOS (con `make`; sin él, `build/console <comando>` directamente
 ```
 make console c="help"
 make console c="video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-make console c="video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=/tmp/videos"
+make console c="video-download --url=dQw4w9WgXcQ --format=video --quality=best"
+make console c="video-download --url=dQw4w9WgXcQ --format=video --output=../mis-videos"
 make console c="video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion"
 make test
 ```
 
-Sin ffmpeg el `--format=video` funciona; el `--format=audio` no.
+Sin `--output` el fichero cae en `storage/downloads` del repo (`APP_DOWNLOADS_PATH`, §2.3). Con `--output` la
+carpeta se crea si no existe. Sin ffmpeg el `--format=video` funciona; el `--format=audio` no.
 
 ### 2.2 Comandos y opciones
 
@@ -67,7 +70,7 @@ Sin ffmpeg el `--format=video` funciona; el `--format=audio` no.
 |---|---|---|
 | 1 | `help` | — |
 | 2 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
-| 3 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH` del `.env` = `storage/downloads`) · `--filename=<nombre sin extensión>` |
+| 3 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH` del `.env` = `storage/downloads`; se crea si no existe) · `--filename=<nombre sin extensión>` |
 
 `--url` acepta la URL completa (`watch?v=`, `youtu.be/`) o el id a secas. Salida: JSON por stdout (apto para `jq`),
 progreso y errores por stderr. Exit 0 ok · 1 error de dominio · 2 inesperado (se loguea en `storage/logs`).
