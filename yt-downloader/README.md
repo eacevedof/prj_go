@@ -4,23 +4,20 @@ Descargador de YouTube por consola en Go, con la arquitectura DDD de `task-go` (
 `console/commands.go` → `src/modules/videos/{application,domain,infrastructure}`. Sin API ni BD.
 Sustituye al PoC `youtube-downloader/` (legacy).
 
-## 1 - arrancar
+## 1 - instalación
 
 ### 1.1 Windows (sin `make`)
 
-```
-install.bat                                  # instala Go y ffmpeg (winget) si faltan, go mod download, .env, build\console.exe
-build\console.exe help
-build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
-build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=D:\videos
-build\console.exe video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion
-go test -count=1 ./...
-```
+1. Clonar el repo y abrir una consola (`cmd` o PowerShell) en `yt-downloader\`.
+2. Ejecutar `install.bat`. Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
+   falta (solo hace falta para `--format=audio`) · `go mod download` · crea `.env` desde `.env.example` si no existe ·
+   compila `build\console.exe`.
+3. Si el `.bat` ha tenido que instalar Go, **cerrar la consola, abrir una nueva** (para que coja el PATH) y volver a
+   ejecutar `install.bat`.
+4. Comprobar: `build\console.exe help` debe listar los comandos.
+5. (Opcional) Revisar `.env` — ver §2.3; con los valores por defecto ya funciona.
 
-Si `install.bat` instala Go, hay que **abrir una consola nueva** (PATH) y lanzarlo otra vez. Sin ffmpeg el
-`--format=video` funciona; el `--format=audio` no.
-
-A mano, lo mismo que hace el `.bat`:
+Si no se quiere usar el `.bat`, los mismos pasos a mano:
 
 ```
 winget install --id GoLang.Go -e
@@ -30,10 +27,31 @@ copy .env.example .env
 go build -o build\console.exe .\cmd\console
 ```
 
-### 1.2 Linux / WSL / macOS (con `make`)
+### 1.2 Linux / WSL / macOS
+
+6. Instalar Go ≥ 1.26 (`https://go.dev/dl/`) y `ffmpeg` (`apt install ffmpeg` · `brew install ffmpeg`).
+7. Clonar el repo y entrar en `yt-downloader/`.
+8. Con `make`: `make build` (crea `.env` y compila `build/console`). Sin `make`:
+   `cp .env.example .env && go mod download && go build -o build/console ./cmd/console`.
+9. Comprobar: `build/console help` (o `make console c="help"`).
+
+## 2 - uso
+
+### 2.1 Ejemplos
+
+Windows:
 
 ```
-make build                                   # .env desde .env.example + build/console
+build\console.exe help
+build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
+build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=D:ideos
+build\console.exe video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion
+go test -count=1 ./...
+```
+
+Linux / WSL / macOS (con `make`; sin él, `build/console <comando>` directamente):
+
+```
 make console c="help"
 make console c="video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 make console c="video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=/tmp/videos"
@@ -41,9 +59,9 @@ make console c="video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio
 make test
 ```
 
-Sin `make`: `cp .env.example .env && go build -o build/console ./cmd/console` y luego `build/console <comando>`.
+Sin ffmpeg el `--format=video` funciona; el `--format=audio` no.
 
-### 1.3 Comandos y opciones
+### 2.2 Comandos y opciones
 
 | # | Comando | Opciones |
 |---|---|---|
@@ -54,7 +72,21 @@ Sin `make`: `cp .env.example .env && go build -o build/console ./cmd/console` y 
 `--url` acepta la URL completa (`watch?v=`, `youtu.be/`) o el id a secas. Salida: JSON por stdout (apto para `jq`),
 progreso y errores por stderr. Exit 0 ok · 1 error de dominio · 2 inesperado (se loguea en `storage/logs`).
 
-## 2 - cómo descarga (y por qué así)
+### 2.3 Variables de entorno (`.env`)
+
+Se leen de `<raíz>/.env` (lo crea `install.bat` / `make env` desde `.env.example`, ver §1); una variable **real del
+sistema** con el mismo nombre gana sobre el fichero. `%PATH_ROOT%` se sustituye por la raíz del repo. Si falta
+una obligatoria el programa no arranca y lo dice (`required env keys not set`).
+
+| # | Variable | Obligatoria | Defecto en `.env.example` | Para qué |
+|---|---|---|---|---|
+| 1 | `APP_ENV` | **sí** | `local` | entorno (`local`, `prod`) |
+| 2 | `APP_DOWNLOADS_PATH` | **sí** | `%PATH_ROOT%/storage/downloads` | carpeta de descargas por defecto; `--output` la sobrescribe |
+| 3 | `APP_DEBUG` | no | `0` | `1` muestra el stack de los errores inesperados |
+| 4 | `APP_NAME` | no | `yt-downloader-go` | nombre en logs |
+| 5 | `APP_LOG_PATH` | no | `%PATH_ROOT%/storage/logs` | carpeta de los logs `YYYY-MM-DD-<tipo>.log` |
+
+## 3 - cómo descarga (y por qué así)
 
 1. Metadatos y formatos con `kkdai/youtube` (cliente ANDROID_VR).
 2. `--format=video`: el mp4 **progresivo** (video+audio en un fichero, itag 18/22) con el cliente ANDROID. Con
@@ -64,7 +96,7 @@ progreso y errores por stderr. Exit 0 ok · 1 error de dominio · 2 inesperado (
 4. No se usan las pistas **adaptativas** (audio solo, 1080p sin audio): YouTube las corta con 403 pasado ~1 MB en todos
    los clientes de la librería (verificado 2026-10-29). Por eso la calidad máxima real es la del progresivo (360p/720p).
 
-## 3 - dependencias
+## 4 - dependencias
 
 - Go 1.26 · `github.com/kkdai/youtube/v2`
 - `ffmpeg` solo para `--format=audio` (Windows: `winget install Gyan.FFmpeg`).
