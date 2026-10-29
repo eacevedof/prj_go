@@ -1,6 +1,6 @@
 @echo off
 setlocal
-rem yt-downloader — instalador para Windows (sin make). Ejecutar desde la raiz del repo:  install.bat
+rem yt-downloader - instalador para Windows (sin make). Ejecutar desde la raiz del repo:  .\install.bat
 rem Instala Go y ffmpeg con winget si faltan, descarga los modulos, crea .env y compila build\console.exe
 cd /d "%~dp0"
 
@@ -10,7 +10,7 @@ if errorlevel 1 (
     echo   no encontrado: instalando con winget...
     winget install --id GoLang.Go -e --accept-source-agreements --accept-package-agreements
     if errorlevel 1 goto :fail
-    echo   Go instalado. ABRE UNA CONSOLA NUEVA para que coja el PATH y vuelve a lanzar install.bat
+    echo   Go instalado. ABRE UNA CONSOLA NUEVA para que coja el PATH y vuelve a lanzar .\install.bat
     goto :end
 )
 for /f "tokens=3" %%v in ('go version') do echo   %%v
@@ -43,8 +43,8 @@ if errorlevel 1 goto :fail
 
 echo.
 echo Listo. Prueba:
-echo   build\console.exe help
-echo   build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
+echo   .\build\console.exe help
+echo   .\build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
 goto :end
 
 :fail

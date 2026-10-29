@@ -9,12 +9,12 @@ Sustituye al PoC `youtube-downloader/` (legacy).
 ### 1.1 Windows (sin `make`)
 
 1. Clonar el repo y abrir una consola (`cmd` o PowerShell) en `yt-downloader\`.
-2. Ejecutar `install.bat`. Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
+2. Ejecutar `.\install.bat` (en `cmd` y en PowerShell; el `.\` es obligatorio en PowerShell). Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
    falta (solo hace falta para `--format=audio`) · `go mod download` · crea `.env` desde `.env.example` si no existe ·
    compila `build\console.exe`.
 3. Si el `.bat` ha tenido que instalar Go, **cerrar la consola, abrir una nueva** (para que coja el PATH) y volver a
-   ejecutar `install.bat`.
-4. Comprobar: `build\console.exe help` debe listar los comandos.
+   ejecutar `.\install.bat`.
+4. Comprobar: `.\build\console.exe help` debe listar los comandos.
 5. (Opcional) Revisar `.env` — ver §2.3; con los valores por defecto ya funciona.
 
 Si no se quiere usar el `.bat`, los mismos pasos a mano:
@@ -39,13 +39,13 @@ go build -o build\console.exe .\cmd\console
 
 ### 2.1 Ejemplos
 
-Windows:
+Windows (`cmd` / PowerShell, con `.\` delante; en **Git Bash** usar `./build/console.exe`):
 
 ```
-build\console.exe help
-build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
-build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=D:ideos
-build\console.exe video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion
+.\build\console.exe help
+.\build\console.exe video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ
+.\build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best --output=D:\videos
+.\build\console.exe video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion
 go test -count=1 ./...
 ```
 
