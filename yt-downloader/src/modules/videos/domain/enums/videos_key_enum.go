@@ -24,6 +24,13 @@ var VideosKeyEnum = struct {
 	HAS_VIDEO      string
 	FILE_PATH      string
 	BYTES          string
+
+	PLAYLIST_ID string
+	OUTPUT_PATH string
+	TOTAL       string
+	DOWNLOADED  string
+	FAILED      string
+	ERROR       string
 }{
 	URL:      "url",
 	FORMAT:   "format",
@@ -47,4 +54,11 @@ var VideosKeyEnum = struct {
 	HAS_VIDEO:      "has_video",
 	FILE_PATH:      "file_path",
 	BYTES:          "bytes",
+
+	PLAYLIST_ID: "playlist_id",
+	OUTPUT_PATH: "output_path",
+	TOTAL:       "total",
+	DOWNLOADED:  "downloaded",
+	FAILED:      "failed",
+	ERROR:       "error",
 }

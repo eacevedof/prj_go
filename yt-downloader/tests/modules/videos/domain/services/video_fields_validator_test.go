@@ -38,6 +38,35 @@ func TestVideoFieldsValidatorGetDownloadErrors(t *testing.T) {
 	tests.AssertStringContainsString(t, "quality: invalid quality", errors[2])
 }
 
+func TestVideoFieldsValidatorGetPlaylistIdFromUrl(t *testing.T) {
+	validator := services.VideoFieldsValidatorGetInstance()
+	cases := map[string]string{
+		"https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf":            "PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf",
+		"https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf": "PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf",
+		"https://music.youtube.com/playlist?list=OLAK5uy_kX1234567890abcdef":                  "OLAK5uy_kX1234567890abcdef",
+		"PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf":                                                  "PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf",
+		"https://www.youtube.com/watch?v=dQw4w9WgXcQ":                                         "",
+		"dQw4w9WgXcQ":           "",
+		"https://vimeo.com/123": "",
+		"":                      "",
+	}
+	for url, expected := range cases {
+		tests.AssertEquals(t, expected, validator.GetPlaylistIdFromUrl(url), url)
+	}
+}
+
+func TestVideoFieldsValidatorGetPlaylistDownloadErrors(t *testing.T) {
+	validator := services.VideoFieldsValidatorGetInstance()
+
+	tests.AssertEmpty(t, validator.GetPlaylistDownloadErrors("PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf", "audio", "best"))
+
+	errors := validator.GetPlaylistDownloadErrors("dQw4w9WgXcQ", "mp3", "4k")
+	tests.AssertEquals(t, 3, len(errors))
+	tests.AssertStringContainsString(t, "url: invalid YouTube playlist url", errors[0])
+	tests.AssertStringContainsString(t, "format: invalid format", errors[1])
+	tests.AssertStringContainsString(t, "quality: invalid quality", errors[2])
+}
+
 func TestFileNameSanitizerGetSafeFileName(t *testing.T) {
 	sanitizer := services.FileNameSanitizerGetInstance()
 	tests.AssertEquals(t, "Mi video parte 1 2", sanitizer.GetSafeFileName(`Mi video: parte 1/2?`, "x"))

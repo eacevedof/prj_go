@@ -47,6 +47,7 @@ Windows (`cmd` / PowerShell, con `.\` delante; en **Git Bash** usar `./build/con
 .\build\console.exe video-download --url=dQw4w9WgXcQ --format=video --quality=best
 .\build\console.exe video-download --url=dQw4w9WgXcQ --format=video --output=..\mis-videos
 .\build\console.exe video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion
+.\build\console.exe playlist-download --url="https://www.youtube.com/playlist?list=PL4cUxeGkcC9gcy9lrvMJ75z9maRw4byYp" --format=audio
 go test -count=1 ./...
 ```
 
@@ -58,6 +59,7 @@ make console c="video-info --url=https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 make console c="video-download --url=dQw4w9WgXcQ --format=video --quality=best"
 make console c="video-download --url=dQw4w9WgXcQ --format=video --output=../mis-videos"
 make console c="video-download --url=https://youtu.be/dQw4w9WgXcQ --format=audio --filename=cancion"
+make console c="playlist-download --url=PL4cUxeGkcC9gcy9lrvMJ75z9maRw4byYp --format=video --output=../mis-videos"
 make test
 ```
 
@@ -71,6 +73,7 @@ carpeta se crea si no existe. Sin ffmpeg el `--format=video` funciona; el `--for
 | 1 | `help` | — |
 | 2 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
 | 3 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH` del `.env` = `storage/downloads`; se crea si no existe) · `--filename=<nombre sin extensión>` |
+| 4 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
 
 `--url` acepta la URL completa (`watch?v=`, `youtu.be/`) o el id a secas. Salida: JSON por stdout (apto para `jq`),
 progreso y errores por stderr. Exit 0 ok · 1 error de dominio · 2 inesperado (se loguea en `storage/logs`).
@@ -98,6 +101,12 @@ una obligatoria el programa no arranca y lo dice (`required env keys not set`).
    a `.m4a`; el mp4 intermedio se borra. Requiere `ffmpeg` en el PATH.
 4. No se usan las pistas **adaptativas** (audio solo, 1080p sin audio): YouTube las corta con 403 pasado ~1 MB en todos
    los clientes de la librería (verificado 2026-10-29). Por eso la calidad máxima real es la del progresivo (360p/720p).
+5. Hay vídeos cuyo progresivo llega **sin `content_length`** y YouTube sirve solo ~200 KB con la cabecera mp4 de la
+   duración entera (ningún cliente de la librería lo da completo, verificado 2026-10-29). Se detecta comparando con
+   `bitrate × duración` y se devuelve el error `was cut by YouTube` en vez de un fichero inservible; en una playlist
+   ese vídeo queda en `failed`.
+6. `playlist-download` lee la lista (id + título de cada vídeo) y delega cada uno en la misma descarga de
+   `video-download`, secuencialmente.
 
 ## 4 - dependencias
 

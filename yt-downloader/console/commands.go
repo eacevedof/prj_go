@@ -35,5 +35,13 @@ func GetCommands() []application.CommandConfig {
 			Info:    "descarga el mp4 (video+audio) o solo el audio (m4a, via ffmpeg) en APP_DOWNLOADS_PATH o --output",
 			Example: "--url=https://youtu.be/<id> --format=video|audio --quality=best|hd720|medium --output=<carpeta> --filename=<nombre>",
 		},
+		{
+			Alias: "playlist-download",
+			Service: func(input []string) application.InterfaceConsole {
+				return videoscommands.DownloadPlaylistCommandGetInstance(input)
+			},
+			Info:    "descarga todos los videos de una playlist en una subcarpeta con su titulo; sigue si uno falla",
+			Example: "--url=https://www.youtube.com/playlist?list=<id> --format=video|audio --quality=best|hd720|medium --output=<carpeta>",
+		},
 	}
 }

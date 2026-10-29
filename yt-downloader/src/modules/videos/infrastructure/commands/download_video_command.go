@@ -17,15 +17,15 @@ import (
 // El progreso va por stderr (stdout queda limpio para el JSON del resultado).
 type DownloadVideoCommand struct {
 	sharedcommands.AbstractConsoleCommand
-	lastPercent int
+	progress *progressPrinter
 }
 
 func DownloadVideoCommandGetInstance(input []string) *DownloadVideoCommand {
-	return &DownloadVideoCommand{AbstractConsoleCommand: sharedcommands.NewAbstractConsoleCommand(input), lastPercent: -1}
+	return &DownloadVideoCommand{AbstractConsoleCommand: sharedcommands.NewAbstractConsoleCommand(input), progress: newProgressPrinter()}
 }
 
 func (c *DownloadVideoCommand) Run() {
-	downloadVideoResultDto, err := downloadvideo.DownloadVideoServiceGetInstance(c.printProgress).Invoke(
+	downloadVideoResultDto, err := downloadvideo.DownloadVideoServiceGetInstance(c.progress.Print).Invoke(
 		downloadvideo.DownloadVideoDtoFromPrimitives(map[string]any{
 			enums.VideosKeyEnum.URL:      c.GetOptionValue(enums.VideosKeyEnum.URL),
 			enums.VideosKeyEnum.FORMAT:   c.GetOptionValue(enums.VideosKeyEnum.FORMAT),
@@ -49,33 +49,4 @@ func (c *DownloadVideoCommand) Run() {
 		c.ExitWithDomainError(videosException)
 	}
 	c.ExitWithUnexpectedError(err, "DownloadVideoCommand.Run")
-}
-
-// printProgress una sola linea que se sobrescribe: "  45% 12.3 MB / 27.1 MB"
-func (c *DownloadVideoCommand) printProgress(read int64, total int64) {
-	if total <= 0 {
-		fmt.Fprintf(os.Stderr, "\r  %s", getHumanBytes(read))
-		return
-	}
-	percent := int(read * 100 / total)
-	if percent == c.lastPercent {
-		return
-	}
-	c.lastPercent = percent
-	fmt.Fprintf(os.Stderr, "\r  %s", c.GetGreen(fmt.Sprintf("%3d%% %s / %s", percent, getHumanBytes(read), getHumanBytes(total))))
-}
-
-func getHumanBytes(bytes int64) string {
-	const unit = 1024
-	if bytes < unit {
-		return fmt.Sprintf("%d B", bytes)
-	}
-	value := float64(bytes)
-	units := []string{"KB", "MB", "GB"}
-	i := -1
-	for value >= unit && i < len(units)-1 {
-		value /= unit
-		i++
-	}
-	return fmt.Sprintf("%.1f %s", value, units[i])
 }

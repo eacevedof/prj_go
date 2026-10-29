@@ -77,6 +77,43 @@ func (r *VideosReaderYoutubeRepository) GetVideoById(videoId string) (*entities.
 	}, formats), nil
 }
 
+// GetPlaylistById metadatos y la lista de videos (id, titulo, duracion) de una playlist publica o no listada.
+// error: *VideosException (404 no existe/privada) o uno inesperado.
+//
+// La libreria saca titulo/autor de la playlist segun youtube.DefaultClient (global) y no segun el cliente que
+// llama (verificado 2026-10-29: con el global en ANDROID el titulo llega vacio). Se fija a ANDROID_VR solo
+// durante esta llamada y se restaura: el global tambien manda al abrir los streams (con VR el progresivo da 403).
+func (r *VideosReaderYoutubeRepository) GetPlaylistById(playlistId string) (*entities.PlaylistEntity, error) {
+	r.mutex.Lock()
+	previousClient := youtube.DefaultClient
+	youtube.DefaultClient = youtube.AndroidVRClient
+	playlist, err := r.adaptiveClient.GetPlaylist(playlistId)
+	youtube.DefaultClient = previousClient
+	r.mutex.Unlock()
+	if err != nil {
+		if errors.Is(err, youtube.ErrInvalidPlaylist) || strings.Contains(strings.ToLower(err.Error()), "not found") {
+			return nil, exceptions.NotFoundCustom(config.Tr(enums.VideosMessageEnum.PLAYLIST_X_NOT_FOUND, playlistId))
+		}
+		return nil, err
+	}
+
+	entries := make([]*entities.PlaylistEntryEntity, 0, len(playlist.Videos))
+	for _, video := range playlist.Videos {
+		entries = append(entries, entities.PlaylistEntryEntityFromPrimitives(map[string]any{
+			enums.VideosKeyEnum.VIDEO_ID:      video.ID,
+			enums.VideosKeyEnum.TITLE:         video.Title,
+			enums.VideosKeyEnum.AUTHOR:        video.Author,
+			enums.VideosKeyEnum.DURATION_SECS: int(video.Duration.Seconds()),
+		}))
+	}
+
+	return entities.PlaylistEntityFromPrimitives(map[string]any{
+		enums.VideosKeyEnum.PLAYLIST_ID: playlist.ID,
+		enums.VideosKeyEnum.TITLE:       playlist.Title,
+		enums.VideosKeyEnum.AUTHOR:      playlist.Author,
+	}, entries), nil
+}
+
 // GetStreamReader el cliente, video y formato con los que abrir el stream del itag pedido (firma ya descifrada
 // por la libreria). Progresivo (audio+video) -> cliente ANDROID; adaptativo -> ANDROID_VR.
 func (r *VideosReaderYoutubeRepository) GetStreamReader(videoId string, itag int) (*youtube.Client, *youtube.Video, *youtube.Format, error) {
