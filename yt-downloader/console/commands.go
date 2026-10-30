@@ -28,6 +28,14 @@ func GetCommands() []application.CommandConfig {
 			Example: "",
 		},
 		{
+			Alias: "version",
+			Service: func(input []string) application.InterfaceConsole {
+				return application.VersionCommandGetInstance(input)
+			},
+			Info:    "version de la app y fecha",
+			Example: "",
+		},
+		{
 			Alias: "video-info",
 			Service: func(input []string) application.InterfaceConsole {
 				return videoscommands.GetVideoInfoCommandGetInstance(input)

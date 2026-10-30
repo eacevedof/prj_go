@@ -73,7 +73,7 @@ func (c *MenuCommand) Run() {
 func (c *MenuCommand) printMenu() {
 	environment := configuration.GetInstance()
 	fmt.Println()
-	c.EchoBlue(fmt.Sprintf("%s v%s", environment.GetAppName(), environment.GetAppVersion()))
+	c.EchoBlue(fmt.Sprintf("%s v%s (%s)", environment.GetAppName(), environment.GetAppVersion(), environment.GetAppVersionUpdate()))
 	fmt.Println("Las descargas van a: " + c.GetYellow(environment.GetDownloadsPath()))
 	fmt.Println()
 	for i, option := range menuOptions {

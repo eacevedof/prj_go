@@ -10,8 +10,10 @@ import (
 	"yt-downloader-go/src/modules/shared/domain/enums"
 )
 
+// Version de la app: la muestran el menu, `version` y `help`, y da nombre al instalable (make dist ->
+// build/dist/eaf-ytdl-<APP_VERSION>.exe). Al subirla, anotar el cambio en changelog.md.
 const (
-	APP_VERSION        = "0.1.0"
+	APP_VERSION        = "0.2.0"
 	APP_VERSION_UPDATE = "2026-10-30"
 )
 
@@ -33,6 +35,10 @@ func GetInstance() *EnvironmentReaderRawRepository {
 
 func (e *EnvironmentReaderRawRepository) GetAppVersion() string {
 	return APP_VERSION
+}
+
+func (e *EnvironmentReaderRawRepository) GetAppVersionUpdate() string {
+	return APP_VERSION_UPDATE
 }
 
 func (e *EnvironmentReaderRawRepository) GetAppName() string {

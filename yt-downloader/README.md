@@ -4,10 +4,12 @@
 
 ### 1.1 Solo usarlo en Windows (sin instalar nada)
 
-1. Copiar `eaf-yt-dl.exe` (lo genera `make dist`, §1.3) a cualquier carpeta, p. ej. `C:\eaf-yt-dl\`.
+1. Descargar `eaf-ytdl-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `eaf-ytdl-0.2.0.exe`) de la página de
+   **Releases** del repo: `https://github.com/eacevedof/prj_go/releases` (el asset de la release `yt-downloader-vx.y.z`),
+   y guardarlo en cualquier carpeta, p. ej. `C:\eaf-ytdl\`. Si no hay release, pedírselo a quien compila (§1.3).
 2. Doble clic (o ejecutarlo sin argumentos): se abre un **menú** que pregunta qué hacer (video, info, playlist, audio,
    playlist en audio), la URL y la calidad. No hace falta `.env`: los vídeos caen en `downloads\` junto al `.exe` y los
-   logs en `logs\`.
+   logs en `logs\`. La cabecera del menú muestra la versión y su fecha.
 3. Solo para audio (`m4a`) hace falta `ffmpeg` en el PATH: `winget install Gyan.FFmpeg`.
 
 ### 1.2 Compilar en Windows (sin `make`)
@@ -28,7 +30,11 @@
 11. Con `make`: `make build` (crea `.env` y compila `build/console`). Sin `make`:
     `cp .env.example .env && go mod download && go build -o build/console ./cmd/console`.
 12. Comprobar: `build/console help` (o `make console c="help"`).
-13. `make dist` genera `build/dist/eaf-yt-dl.exe` (Windows amd64, `-s -w`, ~14 MB) para repartir (§1.1).
+13. **Publicar una versión**: subir `APP_VERSION` y `APP_VERSION_UPDATE` en
+    `src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go`, anotar el
+    cambio en `changelog.md`, `make dist` (genera `build/dist/eaf-ytdl-<versión>.exe`, Windows amd64, ~14 MB) y
+    subir ese `.exe` como asset de una release de GitHub con tag `yt-downloader-v<versión>`. `make version` imprime la
+    versión actual.
 
 ## 2 - uso
 
@@ -69,10 +75,11 @@ carpeta se crea si no existe. Sin ffmpeg el `--format=video` funciona; el `--for
 | # | Comando | Opciones |
 |---|---|---|
 | 1 | `menu` | — · menú interactivo; es lo que arranca sin argumentos |
-| 2 | `help` | — |
-| 3 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
-| 4 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` |
-| 5 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
+| 2 | `help` | — · lista los comandos; la cabecera lleva la versión |
+| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.2.0 (2026-10-30)`) |
+| 4 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
+| 5 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` |
+| 6 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
 
 `--url` acepta la URL completa (`watch?v=`, `youtu.be/`) o el id a secas. Salida: JSON por stdout (apto para `jq`),
 progreso y errores por stderr. Exit 0 ok · 1 error de dominio · 2 inesperado (se loguea en `storage/logs`).

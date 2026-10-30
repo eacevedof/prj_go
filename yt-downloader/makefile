@@ -1,8 +1,11 @@
 #!/bin/bash
 # yt-downloader-go: consola en Go (sin docker). Se lanza desde la raiz del repo.
 CONSOLE := build/console$(if $(filter Windows_NT,$(OS)),.exe,)
+# version unica: la constante APP_VERSION del codigo (la muestra `console version`)
+VERSION := $(shell sed -n 's/.*APP_VERSION *= *"\([^"]*\)".*/\1/p' src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go)
+DIST    := build/dist/eaf-ytdl-$(VERSION).exe
 
-.PHONY: help env build console dist test fmt vet gitpush
+.PHONY: help env build console dist version test fmt vet gitpush
 
 help: ## Show this help message · make help
 	@echo "usage: make [target]"
@@ -30,6 +33,10 @@ gitpush: ## git push · make gitpush m="mensaje"
 	clear;
 	git pull;
 	git add .; git commit -m "$(m)"; git push;
-dist: ## exe para distribuir (sin .env ni repo: descargas junto al exe) · make dist
-	GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o build/dist/eaf-yt-dl.exe ./cmd/console
+dist: ## exe Windows para distribuir, build/dist/eaf-ytdl-<version>.exe · make dist
+	GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o $(DIST) ./cmd/console
+	@echo "generado $(DIST) -> subirlo a https://github.com/eacevedof/prj_go/releases (tag yt-downloader-v$(VERSION))"
+
+version: ## version actual (APP_VERSION) · make version
+	@echo $(VERSION)
 

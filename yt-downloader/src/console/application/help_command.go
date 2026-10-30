@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"yt-downloader-go/src/modules/shared/infrastructure/commands"
+	"yt-downloader-go/src/modules/shared/infrastructure/repositories/configuration"
 )
 
 // HelpCommand ./console help (o sin alias): en verde el comando, en amarillo la llamada que se copia.
@@ -30,6 +31,7 @@ func (c *HelpCommand) Run() {
 		call := strings.TrimSpace("./console " + commandConfig.Alias + " " + commandConfig.Example)
 		lines = append(lines, fmt.Sprintf("\n(%d) ", i+1)+c.GetGreen(commandConfig.Alias)+":"+info+"\n\t"+c.GetYellow(call))
 	}
-	c.EchoBlue("help menu")
+	environment := configuration.GetInstance()
+	c.EchoBlue(fmt.Sprintf("%s v%s (%s) - help", environment.GetAppName(), environment.GetAppVersion(), environment.GetAppVersionUpdate()))
 	fmt.Println(strings.Join(lines, ""))
 }
