@@ -33,6 +33,7 @@ func (d *DownloadVideoResultDto) GetFilePath() string {
 func (d *DownloadVideoResultDto) ToArray() map[string]any {
 	return map[string]any{
 		enums.VideosKeyEnum.VIDEO_ID:  d.videoId,
+		enums.VideosKeyEnum.VIDEO_URL: enums.GetVideoUrl(d.videoId),
 		enums.VideosKeyEnum.TITLE:     d.title,
 		enums.VideosKeyEnum.FILE_PATH: d.filePath,
 		enums.VideosKeyEnum.BYTES:     d.bytes,

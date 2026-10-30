@@ -61,6 +61,11 @@ func GetHeightFromQualityLabel(label string) int {
 	return height
 }
 
+// GetVideoUrl url canonica de YouTube a partir del id.
+func GetVideoUrl(videoId string) string {
+	return "https://www.youtube.com/watch?v=" + videoId
+}
+
 // GetQualityMaxHeight altura maxima en pixeles para el selector de yt-dlp. BEST = sin tope (la mayor que exista).
 func GetQualityMaxHeight(quality string) int {
 	if height := GetHeightFromQualityLabel(quality); height > 0 {

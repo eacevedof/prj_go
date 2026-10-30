@@ -167,6 +167,7 @@ func (v *VideoEntity) ToPrimitives() VideoPrimitives {
 	}
 	return VideoPrimitives{
 		enums.VideosKeyEnum.VIDEO_ID:      v.videoId,
+		enums.VideosKeyEnum.VIDEO_URL:     enums.GetVideoUrl(v.videoId),
 		enums.VideosKeyEnum.TITLE:         v.title,
 		enums.VideosKeyEnum.AUTHOR:        v.author,
 		enums.VideosKeyEnum.DURATION_SECS: v.durationSecs,

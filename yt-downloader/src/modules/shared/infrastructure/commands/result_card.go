@@ -76,12 +76,19 @@ func (c *AbstractConsoleCommand) getCardList(list reflect.Value) string {
 	return strings.Join(parts, ", ")
 }
 
-// getCardScalar las rutas como enlace file:// clicable (OSC 8) y en amarillo; el resto tal cual.
+// getCardScalar las rutas (*_path) como enlace file:// y las urls (*_url) como enlace http, clicables (OSC 8) y en
+// amarillo; el resto tal cual.
 func (c *AbstractConsoleCommand) getCardScalar(key string, text string) string {
-	if !strings.HasSuffix(key, "_path") || text == "" {
+	if text == "" {
 		return text
 	}
-	return c.GetYellow(getHyperlink("file:///"+filepath.ToSlash(text), text))
+	if strings.HasSuffix(key, "_path") {
+		return c.GetYellow(getHyperlink("file:///"+filepath.ToSlash(text), text))
+	}
+	if strings.HasSuffix(key, "_url") {
+		return c.GetYellow(getHyperlink(text, text))
+	}
+	return text
 }
 
 // getHyperlink OSC 8: ESC ] 8 ; ; url ESC \ texto ESC ] 8 ; ; ESC \ . Solo si la terminal interpreta ANSI.

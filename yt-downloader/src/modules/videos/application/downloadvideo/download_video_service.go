@@ -142,7 +142,7 @@ func (s *DownloadVideoService) invokeWithYtDlp(videoId string, videoEntity *enti
 	maxHeight := enums.GetQualityMaxHeight(s.downloadVideoDto.GetQuality())
 	selector, mergeFormat := s.getYtDlpSelector(maxHeight)
 	filePath, err := s.ytDlp.Download(
-		"https://www.youtube.com/watch?v="+videoId, filepath.Join(outputFolder, baseName), selector, mergeFormat, nil, ytdlp.ProgressFunc(s.onProgress),
+		enums.GetVideoUrl(videoId), filepath.Join(outputFolder, baseName), selector, mergeFormat, nil, ytdlp.ProgressFunc(s.onProgress),
 	)
 	if err != nil {
 		return nil, videosexceptions.ConflictCustom(err.Error())
