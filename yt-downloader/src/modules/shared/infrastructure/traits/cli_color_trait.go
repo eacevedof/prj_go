@@ -1,16 +1,28 @@
 package traits
 
-import "fmt"
+import (
+	"fmt"
+
+	"yt-downloader-go/src/core/boot"
+)
 
 // CliColorTrait colores ANSI para la consola: GetXxx() devuelve el texto coloreado, EchoXxx() lo imprime por stdout.
+// Si la terminal no los soporta (boot.AreColorsEnabled), devuelve el texto tal cual.
 type CliColorTrait struct{}
+
+func (t CliColorTrait) paint(code string, text string) string {
+	if !boot.AreColorsEnabled() {
+		return text
+	}
+	return code + text + "\033[0m"
+}
 
 func (t CliColorTrait) EchoRed(text string) {
 	fmt.Println(t.GetRed(text))
 }
 
 func (t CliColorTrait) GetRed(text string) string {
-	return "\033[91m" + text + "\033[0m"
+	return t.paint("\033[91m", text)
 }
 
 func (t CliColorTrait) EchoGreen(text string) {
@@ -18,7 +30,7 @@ func (t CliColorTrait) EchoGreen(text string) {
 }
 
 func (t CliColorTrait) GetGreen(text string) string {
-	return "\033[92m" + text + "\033[0m"
+	return t.paint("\033[92m", text)
 }
 
 func (t CliColorTrait) EchoYellow(text string) {
@@ -26,7 +38,7 @@ func (t CliColorTrait) EchoYellow(text string) {
 }
 
 func (t CliColorTrait) GetYellow(text string) string {
-	return "\033[93m" + text + "\033[0m"
+	return t.paint("\033[93m", text)
 }
 
 func (t CliColorTrait) EchoBlue(text string) {
@@ -34,7 +46,7 @@ func (t CliColorTrait) EchoBlue(text string) {
 }
 
 func (t CliColorTrait) GetBlue(text string) string {
-	return "\033[94m" + text + "\033[0m"
+	return t.paint("\033[94m", text)
 }
 
 func (t CliColorTrait) EchoWhite(text string) {
@@ -42,5 +54,5 @@ func (t CliColorTrait) EchoWhite(text string) {
 }
 
 func (t CliColorTrait) GetWhite(text string) string {
-	return "\033[97m" + text + "\033[0m"
+	return t.paint("\033[97m", text)
 }

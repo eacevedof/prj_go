@@ -35,11 +35,13 @@ var menuOptions = []menuOption{
 	{label: "Descargar un video (mp4)", alias: "video-download", format: "video", asksQuality: true, asksFilename: true},
 	{label: "Ver la informacion de un video", alias: "video-info"},
 	{label: "Descargar una playlist en video (mp4)", alias: "playlist-download", format: "video", asksQuality: true},
-	{label: "Descargar solo el audio de un video (m4a, necesita ffmpeg)", alias: "video-download", format: "audio", asksFilename: true},
-	{label: "Descargar una playlist en audio (m4a, necesita ffmpeg)", alias: "playlist-download", format: "audio"},
+	{label: "Descargar solo el audio de un video (m4a) - antes debes tener instalado ffmpeg (*)", alias: "video-download", format: "audio", asksFilename: true},
+	{label: "Descargar una playlist en audio (m4a) - antes debes tener instalado ffmpeg (*)", alias: "playlist-download", format: "audio"},
 }
 
 var qualityOptions = []string{"best", "hd720", "medium"}
+
+const ffmpegDownloadUrl = "https://www.gyan.dev/ffmpeg/builds/"
 
 func MenuCommandGetInstance(input []string, commandConfigs []CommandConfig) *MenuCommand {
 	return &MenuCommand{
@@ -80,6 +82,8 @@ func (c *MenuCommand) printMenu() {
 		fmt.Printf("  %s) %s\n", c.GetGreen(fmt.Sprint(i+1)), option.label)
 	}
 	fmt.Printf("  %s) Salir\n", c.GetGreen("0"))
+	fmt.Println()
+	fmt.Println("  (*) ffmpeg: en PowerShell `winget install Gyan.FFmpeg`, o descargarlo de " + ffmpegDownloadUrl + " y poner su carpeta bin en el PATH")
 	fmt.Println()
 }
 

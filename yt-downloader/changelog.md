@@ -4,6 +4,11 @@ La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/
 (única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/eaf-ytdl-<versión>.exe`).
 Lo más nuevo arriba.
 
+## 0.2.1 — 2026-10-30
+
+1. Fix: colores ANSI activados en el conhost clásico (doble clic en el `.exe`); sin color si la terminal no los soporta (antes salían `←[94m`).
+2. Menú: opciones de audio avisan de que hay que tener ffmpeg instalado, con el comando `winget` y la URL de descarga.
+
 ## 0.2.0 — 2026-10-30
 
 1. Menú interactivo (`menu`, arranca sin argumentos o con doble clic): vídeo, info, playlist, audio, playlist en audio.

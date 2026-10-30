@@ -22,6 +22,7 @@ type ConsoleMain struct {
 
 func ConsoleMainGetInstance(argv []string, commandConfigs []application.CommandConfig) *ConsoleMain {
 	boot.SetSapiNameCli()
+	boot.EnableConsoleColors()
 	return &ConsoleMain{argv: argv, commandConfigs: commandConfigs}
 }
 
