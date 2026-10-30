@@ -1,8 +1,10 @@
 package services_test
 
 import (
+	"strings"
 	"testing"
 
+	"yt-downloader-go/src/modules/shared/infrastructure/components/slugger"
 	"yt-downloader-go/src/modules/videos/domain/services"
 	"yt-downloader-go/tests"
 )
@@ -67,8 +69,12 @@ func TestVideoFieldsValidatorGetPlaylistDownloadErrors(t *testing.T) {
 	tests.AssertStringContainsString(t, "quality: invalid quality", errors[2])
 }
 
-func TestFileNameSanitizerGetSafeFileName(t *testing.T) {
-	sanitizer := services.FileNameSanitizerGetInstance()
-	tests.AssertEquals(t, "Mi video parte 1 2", sanitizer.GetSafeFileName(`Mi video: parte 1/2?`, "x"))
-	tests.AssertEquals(t, "fallback", sanitizer.GetSafeFileName("???", "fallback"))
+func TestSluggerGetSlug(t *testing.T) {
+	slug := slugger.GetInstance()
+	tests.AssertEquals(t, "la-nina-de-mis-ojos", slug.GetSlug("La Niña de mis Ojos", "x"))
+	tests.AssertEquals(t, "mi-video-parte-1-2", slug.GetSlug(`Mi vídeo: parte 1/2?`, "x"))
+	tests.AssertEquals(t, "rock-and-roll", slug.GetSlug("Rock & Roll!!", "x"))
+	tests.AssertEquals(t, "fallback", slug.GetSlug("???", "fallback"))
+	tests.AssertEquals(t, "file", slug.GetSlug("", ""))
+	tests.AssertEquals(t, true, strings.HasPrefix(slug.GetSlugWithNow("Eva Ayllón - Mal Paso (En Vivo)", "x"), "eva-ayllon-mal-paso-en-vivo-20"))
 }

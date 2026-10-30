@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"yt-downloader-go/src/core/config"
 	"yt-downloader-go/src/modules/shared/domain/enums"
 	"yt-downloader-go/src/modules/shared/infrastructure/exceptions"
+	"yt-downloader-go/src/modules/shared/infrastructure/repositories/configuration"
 	"yt-downloader-go/src/modules/shared/infrastructure/traits"
 )
 
@@ -83,4 +86,27 @@ func (c *AbstractConsoleCommand) printErrors(code int, errors []string) {
 	for _, errorMessage := range errors {
 		fmt.Fprintln(os.Stderr, c.GetRed("  - "+errorMessage))
 	}
+	c.writeErrorLogInDownloads(code, errors)
+}
+
+// writeErrorLogInDownloads todo error (de dominio o inesperado) queda en <downloads>/error-YYYYMMDD.log, donde el
+// usuario del .exe lo encuentra sin buscar la carpeta de logs: fecha-hora, el comando con sus argumentos y el error.
+func (c *AbstractConsoleCommand) writeErrorLogInDownloads(code int, errors []string) {
+	downloadsPath := configuration.GetInstance().GetDownloadsPath()
+	if downloadsPath == "" {
+		return
+	}
+	if err := os.MkdirAll(downloadsPath, 0o777); err != nil {
+		return
+	}
+	now := time.Now()
+	logFile, err := os.OpenFile(
+		filepath.Join(downloadsPath, "error-"+now.Format("20060102")+".log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o666,
+	)
+	if err != nil {
+		return
+	}
+	defer logFile.Close()
+	_, _ = fmt.Fprintf(logFile, "[%s] error %d · %s\n  %s\n", now.Format("2006-01-02 15:04:05"), code,
+		strings.Join(c.input, " "), strings.Join(errors, "\n  "))
 }

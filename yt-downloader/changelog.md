@@ -4,6 +4,11 @@ La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/
 (única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/eaf-ytdl-<versión>.exe`).
 Lo más nuevo arriba.
 
+## 0.3.0 — 2026-10-30
+
+1. Nombres de fichero en slug ASCII + fecha-hora (componente `slugger`): "La Niña de mis Ojos" → `la-nina-de-mis-ojos-20261030-153045.mp4`; la carpeta de una playlist es el slug de su título.
+2. Todo error (de validación, de YouTube o inesperado) se anota además en `<downloads>/error-YYYYMMDD.log` con el comando y el mensaje.
+
 ## 0.2.2 — 2026-10-30
 
 1. Menú entero en inglés; las preguntas de la app en naranja; las calidades en vertical, explicando qué da cada una.

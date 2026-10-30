@@ -6,6 +6,7 @@ import (
 	"yt-downloader-go/src/core/config"
 	sharedenums "yt-downloader-go/src/modules/shared/domain/enums"
 	"yt-downloader-go/src/modules/shared/infrastructure/components/ffmpeg"
+	"yt-downloader-go/src/modules/shared/infrastructure/components/slugger"
 	"yt-downloader-go/src/modules/shared/infrastructure/exceptions"
 	"yt-downloader-go/src/modules/shared/infrastructure/repositories/configuration"
 	"yt-downloader-go/src/modules/shared/infrastructure/traits"
@@ -31,7 +32,7 @@ type VideoEndFunc func(index int, total int, title string, err error)
 type DownloadPlaylistService struct {
 	traits.ErrorStackTrait
 	videoFieldsValidator          *services.VideoFieldsValidator
-	fileNameSanitizer             *services.FileNameSanitizer
+	slugger                       *slugger.Slugger
 	videosReaderYoutubeRepository *repositories.VideosReaderYoutubeRepository
 	audioExtractor                *ffmpeg.AudioExtractor
 	downloadVideoService          *downloadvideo.DownloadVideoService
@@ -44,7 +45,7 @@ type DownloadPlaylistService struct {
 func DownloadPlaylistServiceGetInstance(onProgress ProgressFunc, onVideoStart VideoStartFunc, onVideoEnd VideoEndFunc) *DownloadPlaylistService {
 	return &DownloadPlaylistService{
 		videoFieldsValidator:          services.VideoFieldsValidatorGetInstance(),
-		fileNameSanitizer:             services.FileNameSanitizerGetInstance(),
+		slugger:                       slugger.GetInstance(),
 		videosReaderYoutubeRepository: repositories.VideosReaderYoutubeRepositoryGetInstance(),
 		audioExtractor:                ffmpeg.GetInstance(),
 		downloadVideoService:          downloadvideo.DownloadVideoServiceGetInstance(onProgress),
@@ -137,12 +138,12 @@ func (s *DownloadPlaylistService) downloadEntries(playlistEntity *entities.Playl
 	return downloaded, failed
 }
 
-// getOutputFolder <--output o APP_DOWNLOADS_PATH>/<titulo saneado de la playlist>
+// getOutputFolder <--output o APP_DOWNLOADS_PATH>/<slug del titulo de la playlist> (sin fecha: se reutiliza)
 func (s *DownloadPlaylistService) getOutputFolder(playlistEntity *entities.PlaylistEntity) string {
 	base := s.downloadPlaylistDto.GetOutput()
 	if base == "" {
 		base = configuration.GetInstance().GetDownloadsPath()
 	}
-	folder := s.fileNameSanitizer.GetSafeFileName(playlistEntity.GetTitle(), playlistEntity.GetPlaylistId())
+	folder := s.slugger.GetSlug(playlistEntity.GetTitle(), playlistEntity.GetPlaylistId())
 	return filepath.Join(base, folder)
 }

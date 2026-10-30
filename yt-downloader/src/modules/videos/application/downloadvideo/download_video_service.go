@@ -8,6 +8,7 @@ import (
 	"yt-downloader-go/src/core/config"
 	sharedenums "yt-downloader-go/src/modules/shared/domain/enums"
 	"yt-downloader-go/src/modules/shared/infrastructure/components/ffmpeg"
+	"yt-downloader-go/src/modules/shared/infrastructure/components/slugger"
 	"yt-downloader-go/src/modules/shared/infrastructure/exceptions"
 	"yt-downloader-go/src/modules/shared/infrastructure/repositories/configuration"
 	"yt-downloader-go/src/modules/shared/infrastructure/traits"
@@ -27,7 +28,7 @@ type ProgressFunc = repositories.ProgressFunc
 type DownloadVideoService struct {
 	traits.ErrorStackTrait
 	videoFieldsValidator          *services.VideoFieldsValidator
-	fileNameSanitizer             *services.FileNameSanitizer
+	slugger                       *slugger.Slugger
 	videosReaderYoutubeRepository *repositories.VideosReaderYoutubeRepository
 	videosWriterDiskRepository    *repositories.VideosWriterDiskRepository
 	audioExtractor                *ffmpeg.AudioExtractor
@@ -39,7 +40,7 @@ type DownloadVideoService struct {
 func DownloadVideoServiceGetInstance(onProgress ProgressFunc) *DownloadVideoService {
 	return &DownloadVideoService{
 		videoFieldsValidator:          services.VideoFieldsValidatorGetInstance(),
-		fileNameSanitizer:             services.FileNameSanitizerGetInstance(),
+		slugger:                       slugger.GetInstance(),
 		videosReaderYoutubeRepository: repositories.VideosReaderYoutubeRepositoryGetInstance(),
 		videosWriterDiskRepository:    repositories.VideosWriterDiskRepositoryGetInstance(),
 		audioExtractor:                ffmpeg.GetInstance(),
@@ -145,12 +146,13 @@ func (s *DownloadVideoService) getOutputFolder() string {
 	return configuration.GetInstance().GetDownloadsPath()
 }
 
-// getBaseName el nombre pedido o el titulo saneado, sin extension.
+// getBaseName slug del nombre pedido o del titulo + fecha-hora, sin extension: "la-nina-de-mis-ojos-20261030-153045".
 func (s *DownloadVideoService) getBaseName(videoEntity *entities.VideoEntity) string {
-	if name := s.downloadVideoDto.GetFileName(); name != "" {
-		return name
+	name := s.downloadVideoDto.GetFileName()
+	if name == "" {
+		name = videoEntity.GetTitle()
 	}
-	return s.fileNameSanitizer.GetSafeFileName(videoEntity.GetTitle(), videoEntity.GetVideoId())
+	return s.slugger.GetSlugWithNow(name, videoEntity.GetVideoId())
 }
 
 func (s *DownloadVideoService) getVideoExtension(formatEntity *entities.VideoFormatEntity) string {
