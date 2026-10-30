@@ -2,40 +2,55 @@
 
 ## 1 - instalación
 
-### 1.1 Solo usarlo en Windows (sin instalar nada)
+### 1.1 Solo usarlo (sin instalar nada)
 
-1. Descargar `yt-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `yt-0.5.3.exe`) de la página de
+Windows:
+
+1. Descargar `yt-win-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `yt-win-0.6.0.exe`) de la página de
    **Releases** del repo: <https://github.com/eacevedof/prj_go/releases> (el asset de la release `yt-downloader-vx.y.z`),
-   y guardarlo en cualquier carpeta, p. ej. `C:\eaf-ytdl\`. Si no hay release, pedírselo a quien compila (§1.3).
+   y guardarlo en cualquier carpeta, p. ej. `C:\yt\`. Si no hay release, pedírselo a quien compila (§1.3).
 2. Doble clic (o ejecutarlo sin argumentos): se abre un **menú** que pregunta qué hacer (video, info, playlist, audio,
-   playlist en audio) y la URL; para un vídeo lee su info y lista las resoluciones reales para elegir. No hace falta `.env`: los vídeos caen en `downloads\` junto al `.exe` y los
+   playlist en audio) y la URL; para un vídeo lee su info y lista las resoluciones reales para elegir. No hace falta `.env`: los vídeos caen en `yt-downloads\` junto al `.exe` y los
    logs en `logs\`. La cabecera del menú muestra la versión y su fecha.
-3. La primera descarga baja sola el motor **yt-dlp** (binario oficial, ~24 MB, verificado por SHA-256) a `tools\`
+3. La primera descarga baja sola el motor **yt-dlp** (binario oficial, ~24 MB, verificado por SHA-256) a `yt-tools\`
    junto al `.exe`, y una vez al día comprueba si hay versión nueva y la actualiza. Para vídeo por encima de 360p hace falta `ffmpeg` en el PATH (une vídeo y audio):
    `winget install Gyan.FFmpeg`. Sin ffmpeg: vídeo a 360p y audio `m4a` sí funcionan.
 
+Linux (amd64, también WSL):
+
+4. Descargar `yt-linux-x.y.z` de la misma página de Releases a cualquier carpeta y darle permiso de ejecución:
+   `chmod +x yt-linux-x.y.z`.
+5. Ejecutar `./yt-linux-x.y.z` (menú) o con comandos (§2.1). Las descargas van a `yt-downloads/` y yt-dlp
+   (`yt-dlp_linux`, verificado por SHA-256) a `yt-tools/`, junto al binario. Para más de 360p: `sudo apt install ffmpeg`.
+
+macOS (Apple Silicon, sin probar: no hay Mac a mano):
+
+6. Descargar `yt-macos-x.y.z`, `chmod +x yt-macos-x.y.z` y, la primera vez, quitar la cuarentena de Gatekeeper:
+   `xattr -d com.apple.quarantine yt-macos-x.y.z`. yt-dlp se baja como `yt-dlp_macos`; ffmpeg con `brew install ffmpeg`.
+
 ### 1.2 Compilar en Windows (sin `make`)
 
-4. Clonar el repo y abrir una consola (`cmd` o PowerShell) en `yt-downloader\`.
-5. Ejecutar `.\install.bat` (en `cmd` y en PowerShell; el `.\` es obligatorio en PowerShell). Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
+7. Clonar el repo y abrir una consola (`cmd` o PowerShell) en `yt-downloader\`.
+8. Ejecutar `.\install.bat` (en `cmd` y en PowerShell; el `.\` es obligatorio en PowerShell). Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
    falta (solo hace falta para `--format=audio`) · `go mod download` · crea `.env` desde `.env.example` si no existe ·
    compila `build\console.exe`.
-6. Si el `.bat` ha tenido que instalar Go, **cerrar la consola, abrir una nueva** (para que coja el PATH) y volver a
+9. Si el `.bat` ha tenido que instalar Go, **cerrar la consola, abrir una nueva** (para que coja el PATH) y volver a
    ejecutar `.\install.bat`.
-7. Comprobar: `.\build\console.exe help` debe listar los comandos.
-8. (Opcional) Revisar `.env` — ver §2.3; sin él ya funciona.
+10. Comprobar: `.\build\console.exe help` debe listar los comandos.
+11. (Opcional) Revisar `.env` — ver §2.3; sin él ya funciona.
 
 ### 1.3 Linux / WSL / macOS
 
-9. Instalar Go ≥ 1.26 (`https://go.dev/dl/`) y `ffmpeg` (`apt install ffmpeg` · `brew install ffmpeg`).
-10. Clonar el repo y entrar en `yt-downloader/`.
-11. Con `make`: `make build` (crea `.env` y compila `build/console`). Sin `make`:
+12. Instalar Go ≥ 1.26 (`https://go.dev/dl/`) y `ffmpeg` (`apt install ffmpeg` · `brew install ffmpeg`).
+13. Clonar el repo y entrar en `yt-downloader/`.
+14. Con `make`: `make build` (crea `.env` y compila `build/console`). Sin `make`:
     `cp .env.example .env && go mod download && go build -o build/console ./cmd/console`.
-12. Comprobar: `build/console help` (o `make console c="help"`).
-13. **Publicar una versión**: subir `APP_VERSION` y `APP_VERSION_UPDATE` en
+15. Comprobar: `build/console help` (o `make console c="help"`).
+16. **Publicar una versión**: subir `APP_VERSION` y `APP_VERSION_UPDATE` en
     `src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go`, anotar el
-    cambio en `changelog.md`, `make dist` (genera `build/dist/yt-<versión>.exe`, Windows amd64, ~14 MB) y
-    subir ese `.exe` como asset de una release de GitHub con tag `yt-downloader-v<versión>`. `make version` imprime la
+    cambio en `changelog.md`, `make dist` (genera `build/dist/yt-win-<versión>.exe`, `yt-linux-<versión>` y
+    `yt-macos-<versión>`; también por separado `make dist-win|dist-linux|dist-macos`) y subir los tres como assets de
+    una release de GitHub con tag `yt-downloader-v<versión>`. `make version` imprime la
     versión actual.
 
 ## 2 - uso
@@ -68,7 +83,7 @@ make console c="playlist-download --url=PL4cUxeGkcC9gcy9lrvMJ75z9maRw4byYp --for
 make test
 ```
 
-Sin `--output` el fichero cae en `storage/downloads` del repo, o en `downloads\` junto al `.exe` si se ejecuta fuera
+Sin `--output` el fichero cae en `storage/downloads` del repo, o en `yt-downloads\` junto al `.exe` si se ejecuta fuera
 del repo (`APP_DOWNLOADS_PATH`, §2.3). El nombre es siempre un **slug ASCII con fecha-hora**: el título "La Niña de
 mis Ojos" (o el `--filename` que se pase) se guarda como `la-nina-de-mis-ojos-20261030-153045.mp4`; la carpeta de una
 playlist es el slug de su título. Todo error queda además en `<downloads>/error-YYYYMMDD.log`. Con `--output` la
@@ -80,7 +95,7 @@ carpeta se crea si no existe. Sin ffmpeg: vídeo solo hasta 360p (progresivo) y 
 |---|---|---|
 | 1 | `menu` | — · menú interactivo; es lo que arranca sin argumentos |
 | 2 | `help` | — · lista los comandos; la cabecera lleva la versión |
-| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.5.3 (2026-10-30)`) |
+| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.6.0 (2026-10-30)`) |
 | 4 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
 | 5 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd1080\|hd720\|medium\|<N>p` (defecto `best` = la mayor que exista; `1440p`, `2160p`… también valen) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` (se pasa a slug + fecha-hora) |
 | 6 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
@@ -101,7 +116,7 @@ El `.env` es **opcional**: toda variable tiene un valor por defecto. Se lee `<ra
 | 2 | `APP_DEBUG` | `1` | `1` muestra el detalle de los errores inesperados |
 | 3 | `APP_NAME` | `eaf-yt-dl` | nombre en el menú y en logs |
 | 4 | `APP_DEFAULT_LANG` | `es` | idioma por defecto (reservado) |
-| 5 | `APP_DOWNLOADS_PATH` | repo: `storage/downloads` · exe: `downloads/` junto al `.exe` | carpeta de descargas; `--output` la sobrescribe |
+| 5 | `APP_DOWNLOADS_PATH` | repo: `storage/downloads` · exe: `yt-downloads/` junto al `.exe` | carpeta de descargas; `--output` la sobrescribe |
 | 6 | `APP_LOG_PATH` | repo: `storage/logs` · exe: `logs/` junto al `.exe` | logs `YYYY-MM-DD-<tipo>.log` |
 | 7 | `APP_ENGINE` | `ytdlp` | motor de descarga: `ytdlp` (hasta 1080p) o `native` (solo mp4 progresivo 360p/720p, sin binarios externos) |
 
@@ -109,9 +124,9 @@ El `.env` es **opcional**: toda variable tiene un valor por defecto. Se lee `<ra
 
 1. Metadatos y formatos (título, duración, itags) siempre con la librería Go `kkdai/youtube` (cliente ANDROID_VR).
 2. **Motor `ytdlp`** (defecto): la descarga la hace el binario oficial [yt-dlp](https://github.com/yt-dlp/yt-dlp).
-   Si no está en `tools\`, junto al `.exe` ni en el PATH, se descarga de su última release de GitHub junto con el
+   Si no está en `yt-tools\`, junto al `.exe` ni en el PATH, se descarga de su última release de GitHub junto con el
    fichero `SHA2-256SUMS` y **solo se guarda si el SHA-256 coincide** con el publicado. Una vez al día (sello
-   `tools\yt-dlp.last-check`) compara la versión instalada con la última release y, si cambió, la baja igual de
+   `yt-tools\yt-dlp.last-check`) compara la versión instalada con la última release y, si cambió, la baja igual de
    verificada: YouTube rompe yt-dlp cada pocas semanas y sin esto el motor caduca. yt-dlp resuelve lo que la
    librería Go no puede: el reto JavaScript y el PO token que YouTube exige para las pistas **adaptativas**.
 3. Qué son las adaptativas: YouTube publica cada vídeo como un mp4 **progresivo** (vídeo+audio ya mezclados, solo
@@ -131,5 +146,5 @@ El `.env` es **opcional**: toda variable tiene un valor por defecto. Se lee `<ra
 ## 4 - dependencias
 
 - Go 1.26 · `github.com/kkdai/youtube/v2` (metadatos y motor `native`).
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) (motor `ytdlp`): se descarga solo a `tools\` (gitignored), verificado por SHA-256.
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) (motor `ytdlp`): se descarga solo a `yt-tools\` (gitignored), verificado por SHA-256.
 - `ffmpeg` para vídeo por encima de 360p con `ytdlp` y para audio con `native` (Windows: `winget install Gyan.FFmpeg`).

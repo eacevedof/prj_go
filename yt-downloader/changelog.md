@@ -1,8 +1,23 @@
 # changelog — eaf-yt-dl
 
 La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go`
-(única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/yt-<versión>.exe`).
+(única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/yt-{win,linux,macos}-<versión>`).
 Lo más nuevo arriba.
+
+## 0.6.0 — 2026-10-30
+
+1. **Linux y macOS**: `make dist` genera los tres binarios `yt-win-<versión>.exe`, `yt-linux-<versión>` (amd64) y
+   `yt-macos-<versión>` (Apple Silicon). Mismo menú, carpetas `yt-downloads/` y `yt-tools/` junto al binario; yt-dlp se
+   baja como `yt-dlp_linux` / `yt-dlp_macos` verificado por SHA-256. Linux probado en WSL (Ubuntu); macOS sin probar.
+
+## 0.5.3 — 2026-10-30
+
+1. `video_url` (enlace de YouTube) en el resultado de `video-download`, en `video-info` y en cada vídeo de una playlist; en la tarjeta del menú es clicable.
+
+## 0.5.2 — 2026-10-30
+
+1. Carpetas junto al `.exe` renombradas: `yt-downloads\` (vídeos) y `yt-tools\` (yt-dlp). El compilado pasa a llamarse `yt-<versión>.exe`.
+2. Fix: el menú entraba en bucle infinito si se agotaba la entrada (stdin cerrado); ahora termina.
 
 ## 0.5.1 — 2026-10-30
 

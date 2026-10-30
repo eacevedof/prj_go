@@ -11,9 +11,9 @@ import (
 )
 
 // Version de la app: la muestran el menu, `version` y `help`, y da nombre al instalable (make dist ->
-// build/dist/yt-<APP_VERSION>.exe). Al subirla, anotar el cambio en changelog.md.
+// build/dist/yt-{win,linux,macos}-<APP_VERSION>). Al subirla, anotar el cambio en changelog.md.
 const (
-	APP_VERSION        = "0.5.3"
+	APP_VERSION        = "0.6.0"
 	APP_VERSION_UPDATE = "2026-10-30"
 )
 
