@@ -12,7 +12,7 @@ import (
 
 const (
 	APP_VERSION        = "0.1.0"
-	APP_VERSION_UPDATE = "2026-10-29"
+	APP_VERSION_UPDATE = "2026-10-30"
 )
 
 // EnvironmentReaderRawRepository fuente UNICA de lectura de entorno: un getter semantico por cada clave del .env
@@ -37,6 +37,10 @@ func (e *EnvironmentReaderRawRepository) GetAppVersion() string {
 
 func (e *EnvironmentReaderRawRepository) GetAppName() string {
 	return e.get(enums.AppEnvKeyEnum.APP_NAME)
+}
+
+func (e *EnvironmentReaderRawRepository) GetDefaultLang() string {
+	return e.get(enums.AppEnvKeyEnum.APP_DEFAULT_LANG)
 }
 
 func (e *EnvironmentReaderRawRepository) GetLogPath() string {

@@ -2,28 +2,39 @@
 
 ## 1 - instalación
 
-### 1.1 Windows (sin `make`)
+### 1.1 Solo usarlo en Windows (sin instalar nada)
 
-1. Clonar el repo y abrir una consola (`cmd` o PowerShell) en `yt-downloader\`.
-2. Ejecutar `.\install.bat` (en `cmd` y en PowerShell; el `.\` es obligatorio en PowerShell). Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
+1. Copiar `eaf-yt-dl.exe` (lo genera `make dist`, §1.3) a cualquier carpeta, p. ej. `C:\eaf-yt-dl\`.
+2. Doble clic (o ejecutarlo sin argumentos): se abre un **menú** que pregunta qué hacer (video, info, playlist, audio,
+   playlist en audio), la URL y la calidad. No hace falta `.env`: los vídeos caen en `downloads\` junto al `.exe` y los
+   logs en `logs\`.
+3. Solo para audio (`m4a`) hace falta `ffmpeg` en el PATH: `winget install Gyan.FFmpeg`.
+
+### 1.2 Compilar en Windows (sin `make`)
+
+4. Clonar el repo y abrir una consola (`cmd` o PowerShell) en `yt-downloader\`.
+5. Ejecutar `.\install.bat` (en `cmd` y en PowerShell; el `.\` es obligatorio en PowerShell). Hace, en orden: instala **Go** con `winget` si falta · instala **ffmpeg** con `winget` si
    falta (solo hace falta para `--format=audio`) · `go mod download` · crea `.env` desde `.env.example` si no existe ·
    compila `build\console.exe`.
-3. Si el `.bat` ha tenido que instalar Go, **cerrar la consola, abrir una nueva** (para que coja el PATH) y volver a
+6. Si el `.bat` ha tenido que instalar Go, **cerrar la consola, abrir una nueva** (para que coja el PATH) y volver a
    ejecutar `.\install.bat`.
-4. Comprobar: `.\build\console.exe help` debe listar los comandos.
-5. (Opcional) Revisar `.env` — ver §2.3; con los valores por defecto ya funciona.
+7. Comprobar: `.\build\console.exe help` debe listar los comandos.
+8. (Opcional) Revisar `.env` — ver §2.3; sin él ya funciona.
 
-### 1.2 Linux / WSL / macOS
+### 1.3 Linux / WSL / macOS
 
-6. Instalar Go ≥ 1.26 (`https://go.dev/dl/`) y `ffmpeg` (`apt install ffmpeg` · `brew install ffmpeg`).
-7. Clonar el repo y entrar en `yt-downloader/`.
-8. Con `make`: `make build` (crea `.env` y compila `build/console`). Sin `make`:
-   `cp .env.example .env && go mod download && go build -o build/console ./cmd/console`.
-9. Comprobar: `build/console help` (o `make console c="help"`).
+9. Instalar Go ≥ 1.26 (`https://go.dev/dl/`) y `ffmpeg` (`apt install ffmpeg` · `brew install ffmpeg`).
+10. Clonar el repo y entrar en `yt-downloader/`.
+11. Con `make`: `make build` (crea `.env` y compila `build/console`). Sin `make`:
+    `cp .env.example .env && go mod download && go build -o build/console ./cmd/console`.
+12. Comprobar: `build/console help` (o `make console c="help"`).
+13. `make dist` genera `build/dist/eaf-yt-dl.exe` (Windows amd64, `-s -w`, ~14 MB) para repartir (§1.1).
 
 ## 2 - uso
 
 ### 2.1 Ejemplos
+
+Sin argumentos (o `menu`) se abre el menú interactivo de §1.1; los comandos de abajo son para scripts o consola.
 
 Windows (`cmd` / PowerShell, con `.\` delante; en **Git Bash** usar `./build/console.exe`):
 
@@ -49,34 +60,38 @@ make console c="playlist-download --url=PL4cUxeGkcC9gcy9lrvMJ75z9maRw4byYp --for
 make test
 ```
 
-Sin `--output` el fichero cae en `storage/downloads` del repo (`APP_DOWNLOADS_PATH`, §2.3). Con `--output` la
+Sin `--output` el fichero cae en `storage/downloads` del repo, o en `downloads\` junto al `.exe` si se ejecuta fuera
+del repo (`APP_DOWNLOADS_PATH`, §2.3). Con `--output` la
 carpeta se crea si no existe. Sin ffmpeg el `--format=video` funciona; el `--format=audio` no.
 
 ### 2.2 Comandos y opciones
 
 | # | Comando | Opciones |
 |---|---|---|
-| 1 | `help` | — |
-| 2 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
-| 3 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH` del `.env` = `storage/downloads`; se crea si no existe) · `--filename=<nombre sin extensión>` |
-| 4 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
+| 1 | `menu` | — · menú interactivo; es lo que arranca sin argumentos |
+| 2 | `help` | — |
+| 3 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
+| 4 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` |
+| 5 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
 
 `--url` acepta la URL completa (`watch?v=`, `youtu.be/`) o el id a secas. Salida: JSON por stdout (apto para `jq`),
 progreso y errores por stderr. Exit 0 ok · 1 error de dominio · 2 inesperado (se loguea en `storage/logs`).
 
-### 2.3 Variables de entorno (`.env`)
+### 2.3 Variables de entorno (`.env`, opcional)
 
-Se leen de `<raíz>/.env` (lo crea `install.bat` / `make env` desde `.env.example`, ver §1); una variable **real del
-sistema** con el mismo nombre gana sobre el fichero. `%PATH_ROOT%` se sustituye por la raíz del repo. Si falta
-una obligatoria el programa no arranca y lo dice (`required env keys not set`).
+El `.env` es **opcional**: toda variable tiene un valor por defecto. Se lee `<raíz>/.env` si existe (lo crea
+`install.bat` / `make env` desde `.env.example`); prioridad: variable **real del sistema** > `.env` > defecto.
+`%PATH_ROOT%` se sustituye por la raíz. La raíz es la carpeta del `go.mod` si se ejecuta dentro del repo, o la del
+`.exe` si no.
 
-| # | Variable | Obligatoria | Defecto en `.env.example` | Para qué |
-|---|---|---|---|---|
-| 1 | `APP_ENV` | **sí** | `local` | entorno (`local`, `prod`) |
-| 2 | `APP_DOWNLOADS_PATH` | **sí** | `%PATH_ROOT%/storage/downloads` | carpeta de descargas por defecto; `--output` la sobrescribe |
-| 3 | `APP_DEBUG` | no | `0` | `1` muestra el stack de los errores inesperados |
-| 4 | `APP_NAME` | no | `yt-downloader-go` | nombre en logs |
-| 5 | `APP_LOG_PATH` | no | `%PATH_ROOT%/storage/logs` | carpeta de los logs `YYYY-MM-DD-<tipo>.log` |
+| # | Variable | Defecto | Para qué |
+|---|---|---|---|
+| 1 | `APP_ENV` | `develop` | entorno (`local`, `develop`, `test`, `production`) |
+| 2 | `APP_DEBUG` | `1` | `1` muestra el detalle de los errores inesperados |
+| 3 | `APP_NAME` | `eaf-yt-dl` | nombre en el menú y en logs |
+| 4 | `APP_DEFAULT_LANG` | `es` | idioma por defecto (reservado) |
+| 5 | `APP_DOWNLOADS_PATH` | repo: `storage/downloads` · exe: `downloads/` junto al `.exe` | carpeta de descargas; `--output` la sobrescribe |
+| 6 | `APP_LOG_PATH` | repo: `storage/logs` · exe: `logs/` junto al `.exe` | logs `YYYY-MM-DD-<tipo>.log` |
 
 ## 3 - cómo descarga (y por qué así)
 

@@ -18,6 +18,14 @@ const (
 	EXIT_CODE_INFRASTRUCTURE_ERROR = 2
 )
 
+// exitFunc como termina un comando que falla. Por defecto os.Exit; el menu interactivo lo sustituye (SetExitFunc)
+// para volver al menu en vez de cerrar la ventana.
+var exitFunc = os.Exit
+
+func SetExitFunc(fn func(code int)) {
+	exitFunc = fn
+}
+
 // AbstractConsoleCommand base de todo comando: lee --clave=valor, imprime el ResultDto en JSON por stdout (sin
 // color: se puede pasar a jq) y los errores en rojo por stderr con su codigo de salida.
 // 0 ok · 1 error de dominio (lo que en HTTP es un 4xx) · 2 error de infraestructura (el 500, se loguea).
@@ -55,7 +63,7 @@ func (c *AbstractConsoleCommand) PrintResult(result any) {
 
 func (c *AbstractConsoleCommand) ExitWithDomainError(ex exceptions.InterfaceException) {
 	c.printErrors(ex.GetCode(), []string{ex.Error()})
-	os.Exit(EXIT_CODE_DOMAIN_ERROR)
+	exitFunc(EXIT_CODE_DOMAIN_ERROR)
 }
 
 // ExitWithUnexpectedError como el 500 de una API: se loguea con el metodo que fallo; quien tiene la consola ve el
@@ -67,7 +75,7 @@ func (c *AbstractConsoleCommand) ExitWithUnexpectedError(err error, logTitle str
 		enums.ExceptionEnum.CODE_INTERNAL_SERVER_ERROR,
 		[]string{config.Tr(enums.SharedMessageEnum.AN_UNEXPECTED_ERROR_HAS_OCCURRED)},
 	)
-	os.Exit(EXIT_CODE_INFRASTRUCTURE_ERROR)
+	exitFunc(EXIT_CODE_INFRASTRUCTURE_ERROR)
 }
 
 func (c *AbstractConsoleCommand) printErrors(code int, errors []string) {

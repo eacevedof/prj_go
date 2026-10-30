@@ -12,6 +12,14 @@ import (
 func GetCommands() []application.CommandConfig {
 	return []application.CommandConfig{
 		{
+			Alias: "menu",
+			Service: func(input []string) application.InterfaceConsole {
+				return application.MenuCommandGetInstance(input, GetCommands())
+			},
+			Info:    "menu interactivo (es lo que se abre al ejecutar sin argumentos o con doble clic)",
+			Example: "",
+		},
+		{
 			Alias: "help",
 			Service: func(input []string) application.InterfaceConsole {
 				return application.HelpCommandGetInstance(input, GetCommands())

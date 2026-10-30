@@ -19,12 +19,13 @@ var (
 	envCommentPattern     = regexp.MustCompile(`(^|\s+)#.*$`)
 )
 
-// AppbootLoadenv carga <root>/.env y FALLA RUIDOSO si falta alguna clave obligatoria. Las variables REALES del
-// OS ganan sobre el fichero.
+// AppbootLoadenv carga <root>/.env si existe y rellena con valores por defecto lo que falte: el .env es OPCIONAL
+// (quien solo tiene el .exe no configura nada). Prioridad: variable REAL del OS > .env > defecto.
 func AppbootLoadenv() error {
 	pathEnv := filepath.Join(boot.BootPathsEnum.PATH_ROOT, ".env")
 	appbootLoadenvfile(pathEnv)
-	return appbootAssertrequiredenvkeys(pathEnv)
+	appbootSetdefaultenvkeys()
+	return nil
 }
 
 // Lgerr storage/logs/YYYY-MM-DD-<type>.log (mismo esquema que LogTrait/Logger).
@@ -95,29 +96,19 @@ func appbootGetenvfilevalue(rawValue string) string {
 	return strings.TrimSpace(envCommentPattern.ReplaceAllString(value, ""))
 }
 
-func appbootAssertrequiredenvkeys(pathEnv string) error {
-	missingKeys := appbootGetmissingenvkeys()
-	if len(missingKeys) == 0 {
-		return nil
+// appbootSetdefaultenvkeys toda clave ausente o vacia toma su valor por defecto.
+func appbootSetdefaultenvkeys() {
+	defaults := map[string]string{
+		enums.AppEnvKeyEnum.APP_ENV:            enums.AppEnvDefaultEnum.APP_ENV,
+		enums.AppEnvKeyEnum.APP_DEBUG:          enums.AppEnvDefaultEnum.APP_DEBUG,
+		enums.AppEnvKeyEnum.APP_NAME:           enums.AppEnvDefaultEnum.APP_NAME,
+		enums.AppEnvKeyEnum.APP_DEFAULT_LANG:   enums.AppEnvDefaultEnum.APP_DEFAULT_LANG,
+		enums.AppEnvKeyEnum.APP_LOG_PATH:       boot.BootPathsEnum.PATH_LOGS,
+		enums.AppEnvKeyEnum.APP_DOWNLOADS_PATH: boot.BootPathsEnum.PATH_DOWNLOADS,
 	}
-	reason := "the .env file lacks them"
-	if _, err := os.Stat(pathEnv); err != nil {
-		reason = "missing file " + pathEnv + " (copy .env.example to .env)"
-	}
-	return fmt.Errorf("appboot_loadenv: required env keys not set (%s): %s", strings.Join(missingKeys, ", "), reason)
-}
-
-// appbootGetmissingenvkeys claves obligatorias ausentes o vacias.
-func appbootGetmissingenvkeys() []string {
-	requiredKeys := []string{
-		enums.AppEnvKeyEnum.APP_ENV,
-		enums.AppEnvKeyEnum.APP_DOWNLOADS_PATH,
-	}
-	var missingKeys []string
-	for _, key := range requiredKeys {
+	for key, value := range defaults {
 		if strings.TrimSpace(os.Getenv(key)) == "" {
-			missingKeys = append(missingKeys, key)
+			_ = os.Setenv(key, value)
 		}
 	}
-	return missingKeys
 }

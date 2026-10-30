@@ -47,8 +47,9 @@ func (m *ConsoleMain) invokeConsoleServiceWithArgs() error {
 	if len(m.argv) > 1 {
 		alias = strings.TrimSpace(m.argv[1])
 	}
+	// sin argumentos (doble clic en el .exe): menu interactivo
 	if alias == "" {
-		alias = "help"
+		alias = "menu"
 	}
 
 	for _, commandConfig := range m.commandConfigs {
