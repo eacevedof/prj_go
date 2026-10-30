@@ -5,7 +5,7 @@
 ### 1.1 Solo usarlo en Windows (sin instalar nada)
 
 1. Descargar `eaf-ytdl-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `eaf-ytdl-0.2.0.exe`) de la página de
-   **Releases** del repo: `https://github.com/eacevedof/prj_go/releases` (el asset de la release `yt-downloader-vx.y.z`),
+   **Releases** del repo: <https://github.com/eacevedof/prj_go/releases> (el asset de la release `yt-downloader-vx.y.z`),
    y guardarlo en cualquier carpeta, p. ej. `C:\eaf-ytdl\`. Si no hay release, pedírselo a quien compila (§1.3).
 2. Doble clic (o ejecutarlo sin argumentos): se abre un **menú** que pregunta qué hacer (video, info, playlist, audio,
    playlist en audio), la URL y la calidad. No hace falta `.env`: los vídeos caen en `downloads\` junto al `.exe` y los
