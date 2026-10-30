@@ -4,7 +4,7 @@
 
 ### 1.1 Solo usarlo en Windows (sin instalar nada)
 
-1. Descargar `eaf-ytdl-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `eaf-ytdl-0.5.0.exe`) de la página de
+1. Descargar `yt-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `yt-0.5.2.exe`) de la página de
    **Releases** del repo: <https://github.com/eacevedof/prj_go/releases> (el asset de la release `yt-downloader-vx.y.z`),
    y guardarlo en cualquier carpeta, p. ej. `C:\eaf-ytdl\`. Si no hay release, pedírselo a quien compila (§1.3).
 2. Doble clic (o ejecutarlo sin argumentos): se abre un **menú** que pregunta qué hacer (video, info, playlist, audio,
@@ -34,7 +34,7 @@
 12. Comprobar: `build/console help` (o `make console c="help"`).
 13. **Publicar una versión**: subir `APP_VERSION` y `APP_VERSION_UPDATE` en
     `src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go`, anotar el
-    cambio en `changelog.md`, `make dist` (genera `build/dist/eaf-ytdl-<versión>.exe`, Windows amd64, ~14 MB) y
+    cambio en `changelog.md`, `make dist` (genera `build/dist/yt-<versión>.exe`, Windows amd64, ~14 MB) y
     subir ese `.exe` como asset de una release de GitHub con tag `yt-downloader-v<versión>`. `make version` imprime la
     versión actual.
 
@@ -80,7 +80,7 @@ carpeta se crea si no existe. Sin ffmpeg: vídeo solo hasta 360p (progresivo) y 
 |---|---|---|
 | 1 | `menu` | — · menú interactivo; es lo que arranca sin argumentos |
 | 2 | `help` | — · lista los comandos; la cabecera lleva la versión |
-| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.5.0 (2026-10-30)`) |
+| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.5.2 (2026-10-30)`) |
 | 4 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
 | 5 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd1080\|hd720\|medium\|<N>p` (defecto `best` = la mayor que exista; `1440p`, `2160p`… también valen) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` (se pasa a slug + fecha-hora) |
 | 6 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |

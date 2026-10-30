@@ -3,7 +3,7 @@
 CONSOLE := build/console$(if $(filter Windows_NT,$(OS)),.exe,)
 # version unica: la constante APP_VERSION del codigo (la muestra `console version`)
 VERSION := $(shell sed -n 's/.*APP_VERSION *= *"\([^"]*\)".*/\1/p' src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go)
-DIST    := build/dist/eaf-ytdl-$(VERSION).exe
+DIST    := build/dist/yt-$(VERSION).exe
 
 .PHONY: help env build console dist version test fmt vet gitpush
 
@@ -33,7 +33,7 @@ gitpush: ## git push · make gitpush m="mensaje"
 	clear;
 	git pull;
 	git add .; git commit -m "$(m)"; git push;
-dist: ## exe Windows para distribuir, build/dist/eaf-ytdl-<version>.exe · make dist
+dist: ## exe Windows para distribuir, build/dist/yt-<version>.exe · make dist
 	GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o $(DIST) ./cmd/console
 	@echo "generado $(DIST) -> subirlo a https://github.com/eacevedof/prj_go/releases (tag yt-downloader-v$(VERSION))"
 

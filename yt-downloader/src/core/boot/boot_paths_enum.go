@@ -7,9 +7,9 @@ import (
 
 // BootPathsEnum rutas absolutas de la app. Dos modos:
 //   - REPO (hay go.mod subiendo desde el cwd): raiz = esa carpeta; descargas y logs en storage/.
-//   - EXE EMPAQUETADO (no hay go.mod): raiz = carpeta del ejecutable; descargas en <exe>/downloads y logs en
+//   - EXE EMPAQUETADO (no hay go.mod): raiz = carpeta del ejecutable; descargas en <exe>/yt-downloads y logs en
 //     <exe>/logs, para que quien solo tiene el .exe no configure nada.
-//   - PATH_TOOLS (<raiz>/tools): binarios de terceros que la app descarga (yt-dlp). Gitignored.
+//   - PATH_TOOLS (<raiz>/yt-tools): binarios de terceros que la app descarga (yt-dlp). Gitignored.
 var BootPathsEnum = func() struct {
 	PATH_ROOT      string
 	PATH_SRC       string
@@ -23,7 +23,7 @@ var BootPathsEnum = func() struct {
 	pathDownloads := filepath.Join(pathRoot, "storage", "downloads")
 	if isPackaged {
 		pathLogs = filepath.Join(pathRoot, "logs")
-		pathDownloads = filepath.Join(pathRoot, "downloads")
+		pathDownloads = filepath.Join(pathRoot, "yt-downloads")
 	}
 	return struct {
 		PATH_ROOT      string
@@ -37,7 +37,7 @@ var BootPathsEnum = func() struct {
 		PATH_SRC:       filepath.Join(pathRoot, "src"),
 		PATH_LOGS:      pathLogs,
 		PATH_DOWNLOADS: pathDownloads,
-		PATH_TOOLS:     filepath.Join(pathRoot, "tools"),
+		PATH_TOOLS:     filepath.Join(pathRoot, "yt-tools"),
 		IS_PACKAGED:    isPackaged,
 	}
 }()

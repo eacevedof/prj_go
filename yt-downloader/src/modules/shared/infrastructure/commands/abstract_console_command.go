@@ -54,8 +54,19 @@ func (c *AbstractConsoleCommand) GetOptionValue(optionName string) string {
 	return ""
 }
 
-// PrintResult JSON con 4 espacios sin escapar unicode ni barras.
+// humanOutput true en el menu interactivo: PrintResult pinta una tarjeta legible en vez de JSON.
+var humanOutput = false
+
+func SetHumanOutput(enabled bool) {
+	humanOutput = enabled
+}
+
+// PrintResult JSON con 4 espacios sin escapar unicode ni barras (o tarjeta si SetHumanOutput).
 func (c *AbstractConsoleCommand) PrintResult(result any) {
+	if humanOutput {
+		c.printCard(result)
+		return
+	}
 	var jsonBuffer bytes.Buffer
 	jsonEncoder := json.NewEncoder(&jsonBuffer)
 	jsonEncoder.SetEscapeHTML(false)

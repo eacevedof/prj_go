@@ -39,7 +39,7 @@ type ProgressFunc func(read int64, total int64)
 
 // YtDlp motor de descarga: envuelve el binario oficial yt-dlp (github.com/yt-dlp/yt-dlp). Es quien resuelve lo que
 // la libreria Go no puede: pistas adaptativas (720p/1080p, audio solo) con el reto JS y el PO token de YouTube.
-// El binario se busca en <root>/tools/, junto al ejecutable y en el PATH; si no esta se descarga de la release
+// El binario se busca en <root>/yt-tools/, junto al ejecutable y en el PATH; si no esta se descarga de la release
 // oficial y se verifica su SHA-256 contra el fichero de sumas publicado en la misma release.
 type YtDlp struct {
 	exePath string
@@ -140,7 +140,7 @@ func (y *YtDlp) Download(url string, outputBasePath string, formatSelector strin
 	return findOutputFile(outputBasePath)
 }
 
-// updateIfOutdated una vez al dia (sello tools/yt-dlp.last-check) compara la version instalada con la ultima
+// updateIfOutdated una vez al dia (sello yt-tools/yt-dlp.last-check) compara la version instalada con la ultima
 // release (redireccion de /releases/latest) y, si difiere, baja la nueva verificada. YouTube rompe yt-dlp cada pocas
 // semanas: sin esto el motor caduca. Cualquier fallo de red se ignora: se sigue con la version instalada.
 func (y *YtDlp) updateIfOutdated(onNotice func(message string)) {
@@ -202,7 +202,7 @@ func (y *YtDlp) findExe() string {
 	return ""
 }
 
-// downloadVerified baja el asset de la release + SHA2-256SUMS, compara y solo entonces lo deja en tools/.
+// downloadVerified baja el asset de la release + SHA2-256SUMS, compara y solo entonces lo deja en yt-tools/.
 func (y *YtDlp) downloadVerified() (string, error) {
 	client := &http.Client{Timeout: ytdlpDownloadTimout}
 	checksums, err := getBody(client, YTDLP_RELEASES_URL+YTDLP_CHECKSUMS)

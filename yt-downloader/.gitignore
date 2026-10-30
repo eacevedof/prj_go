@@ -5,7 +5,7 @@
 .env.local
 
 # binarios de terceros descargados por la app (yt-dlp)
-tools/
+yt-tools/
 
 # binarios (go build -o build/...)
 build/*

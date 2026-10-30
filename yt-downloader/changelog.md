@@ -1,8 +1,13 @@
 # changelog — eaf-yt-dl
 
 La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/configuration/environment_reader_raw_repository.go`
-(única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/eaf-ytdl-<versión>.exe`).
+(única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/yt-<versión>.exe`).
 Lo más nuevo arriba.
+
+## 0.5.1 — 2026-10-30
+
+1. Menú: `select an option [1-6]`, salir es la 6, preguntas en minúsculas.
+2. En el menú el resultado se muestra como tarjeta legible (no JSON) y la ruta del fichero es un enlace clicable (OSC 8, Windows Terminal).
 
 ## 0.5.0 — 2026-10-30
 
@@ -37,7 +42,7 @@ Lo más nuevo arriba.
 1. Menú interactivo (`menu`, arranca sin argumentos o con doble clic): vídeo, info, playlist, audio, playlist en audio.
 2. `.env` opcional: valores por defecto (`APP_ENV=develop`, `APP_DEBUG=1`, `APP_NAME=eaf-yt-dl`, `APP_DEFAULT_LANG=es`).
 3. Modo exe suelto: fuera del repo las descargas van a `downloads\` y los logs a `logs\` junto al `.exe`.
-4. `make dist` → `build/dist/eaf-ytdl-<versión>.exe` · comando `version`.
+4. `make dist` → `build/dist/yt-<versión>.exe` · comando `version`.
 
 ## 0.1.0 — 2026-10-29
 
