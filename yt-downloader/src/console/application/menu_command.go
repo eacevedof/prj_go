@@ -8,6 +8,8 @@ import (
 
 	"yt-downloader-go/src/modules/shared/infrastructure/commands"
 	"yt-downloader-go/src/modules/shared/infrastructure/repositories/configuration"
+	"yt-downloader-go/src/modules/videos/application/getvideoinfo"
+	videosenums "yt-downloader-go/src/modules/videos/domain/enums"
 )
 
 // MenuCommand ./console menu (o sin argumentos, o doble clic en el .exe): pregunta que hacer y los datos minimos
@@ -39,15 +41,15 @@ var menuOptions = []menuOption{
 	{label: "Download a playlist as audio (m4a) - ffmpeg must be installed first (*)", alias: "playlist-download", format: "audio"},
 }
 
-// qualityOptions valor del parametro --quality y su explicacion (motor yt-dlp: altura maxima).
+// qualityOptions para playlists (no se puede listar video a video): valor de --quality y su explicacion.
 var qualityOptions = []struct {
 	value string
 	label string
 }{
-	{value: "best", label: "best (up to 1080p; needs ffmpeg above 360p)"},
-	{value: "hd1080", label: "hd1080 (1080p if the video has it)"},
-	{value: "hd720", label: "hd720 (720p)"},
-	{value: "medium", label: "medium (360p, smaller file, no ffmpeg needed)"},
+	{value: "best", label: "best (the highest each video has; needs ffmpeg above 360p)"},
+	{value: "hd1080", label: "hd1080 (up to 1080p)"},
+	{value: "hd720", label: "hd720 (up to 720p)"},
+	{value: "medium", label: "medium (360p, smaller files, no ffmpeg needed)"},
 }
 
 const ffmpegDownloadUrl = "https://www.gyan.dev/ffmpeg/builds/"
@@ -107,7 +109,14 @@ func (c *MenuCommand) runOption(option menuOption) {
 		input = append(input, "--format="+option.format)
 	}
 	if option.asksQuality {
-		input = append(input, "--quality="+c.askQuality())
+		quality := ""
+		if option.alias == "video-download" {
+			quality = c.askVideoResolution(url)
+		}
+		if quality == "" {
+			quality = c.askQuality()
+		}
+		input = append(input, "--quality="+quality)
 	}
 	if option.asksFilename {
 		if filename := c.ask("File name (Enter = the video title)", ""); filename != "" {
@@ -130,6 +139,37 @@ func (c *MenuCommand) runOption(option menuOption) {
 		}
 	}
 	c.EchoRed("no command found for alias " + option.alias)
+}
+
+// askVideoResolution pide la info del video y lista sus resoluciones reales (1080p, 720p, 360p...) para elegir una;
+// "" si la info falla (se cae a la lista generica) o el usuario no elige.
+func (c *MenuCommand) askVideoResolution(url string) string {
+	fmt.Println()
+	c.EchoOrange("Reading video info...")
+	resultDto, err := getvideoinfo.GetVideoInfoServiceGetInstance().Invoke(
+		getvideoinfo.GetVideoInfoDtoFromPrimitives(map[string]any{videosenums.VideosKeyEnum.URL: url}),
+	)
+	if err != nil {
+		c.EchoRed(err.Error())
+		return ""
+	}
+	heights := resultDto.GetAvailableHeights()
+	if len(heights) == 0 {
+		return ""
+	}
+	fmt.Println(c.GetOrange("Title: ") + resultDto.GetTitle())
+	c.EchoOrange("Resolutions found (above 360p ffmpeg is needed to merge video and audio):")
+	for i, height := range heights {
+		fmt.Printf("  %s) %dp\n", c.GetGreen(fmt.Sprint(i+1)), height)
+	}
+	for {
+		choice := c.ask("Resolution", "1")
+		index := -1
+		if _, err := fmt.Sscanf(choice, "%d", &index); err == nil && index >= 1 && index <= len(heights) {
+			return fmt.Sprintf("%dp", heights[index-1])
+		}
+		c.EchoRed("Invalid option")
+	}
 }
 
 func (c *MenuCommand) askQuality() string {

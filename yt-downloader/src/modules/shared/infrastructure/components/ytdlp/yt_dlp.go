@@ -23,8 +23,10 @@ import (
 
 const (
 	YTDLP_RELEASES_URL  = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/"
+	YTDLP_LATEST_URL    = "https://github.com/yt-dlp/yt-dlp/releases/latest"
 	YTDLP_CHECKSUMS     = "SHA2-256SUMS"
 	ytdlpDownloadTimout = 5 * time.Minute
+	ytdlpCheckInterval  = 24 * time.Hour
 )
 
 var (
@@ -65,6 +67,7 @@ func (y *YtDlp) EnsureAvailable(onDownloadStart func(message string)) error {
 	}
 	if path := y.findExe(); path != "" {
 		y.exePath = path
+		y.updateIfOutdated(onDownloadStart)
 		return nil
 	}
 	if onDownloadStart != nil {
@@ -135,6 +138,53 @@ func (y *YtDlp) Download(url string, outputBasePath string, formatSelector strin
 		return "", fmt.Errorf("yt-dlp failed: %s", getLastErrorLine(stderrBuffer.String(), err))
 	}
 	return findOutputFile(outputBasePath)
+}
+
+// updateIfOutdated una vez al dia (sello tools/yt-dlp.last-check) compara la version instalada con la ultima
+// release (redireccion de /releases/latest) y, si difiere, baja la nueva verificada. YouTube rompe yt-dlp cada pocas
+// semanas: sin esto el motor caduca. Cualquier fallo de red se ignora: se sigue con la version instalada.
+func (y *YtDlp) updateIfOutdated(onNotice func(message string)) {
+	stampPath := filepath.Join(boot.BootPathsEnum.PATH_TOOLS, "yt-dlp.last-check")
+	if info, err := os.Stat(stampPath); err == nil && time.Since(info.ModTime()) < ytdlpCheckInterval {
+		return
+	}
+	_ = os.MkdirAll(boot.BootPathsEnum.PATH_TOOLS, 0o777)
+	_ = os.WriteFile(stampPath, []byte(time.Now().Format(time.RFC3339)), 0o666)
+
+	latest := getLatestVersion()
+	current := y.GetVersion()
+	if latest == "" || current == "" || latest == current {
+		return
+	}
+	if onNotice != nil {
+		onNotice("yt-dlp " + current + " is outdated: downloading " + latest + " (verified by sha256)...")
+	}
+	path, err := y.downloadVerified()
+	if err != nil {
+		if onNotice != nil {
+			onNotice("yt-dlp update failed, keeping " + current + ": " + err.Error())
+		}
+		return
+	}
+	y.exePath = path
+}
+
+// getLatestVersion "2026.10.26" leyendo el Location de /releases/latest (sin API, sin limite de peticiones).
+func getLatestVersion() string {
+	client := &http.Client{
+		Timeout:       15 * time.Second,
+		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
+	}
+	response, err := client.Head(YTDLP_LATEST_URL)
+	if err != nil {
+		return ""
+	}
+	defer response.Body.Close()
+	location := response.Header.Get("Location")
+	if i := strings.LastIndex(location, "/tag/"); i >= 0 {
+		return strings.TrimSpace(location[i+len("/tag/"):])
+	}
+	return ""
 }
 
 func (y *YtDlp) findExe() string {

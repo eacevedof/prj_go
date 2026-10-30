@@ -1,6 +1,11 @@
 package entities
 
-import "yt-downloader-go/src/modules/videos/domain/enums"
+import (
+	"slices"
+	"sort"
+
+	"yt-downloader-go/src/modules/videos/domain/enums"
+)
 
 // VideoFormatPrimitives un formato descargable tal cual sale por JSON.
 type VideoFormatPrimitives map[string]any
@@ -138,6 +143,23 @@ func (v *VideoEntity) GetBestAudioFormat() *VideoFormatEntity {
 	return best
 }
 
+// GetAvailableHeights alturas de video distintas (1080, 720, 360...) de mayor a menor, segun las etiquetas
+// "1080p"/"720p60" de todos los formatos con video (progresivos y adaptativos).
+func (v *VideoEntity) GetAvailableHeights() []int {
+	var heights []int
+	for _, format := range v.formats {
+		if !format.HasVideo() {
+			continue
+		}
+		height := enums.GetHeightFromQualityLabel(format.GetQualityLabel())
+		if height > 0 && !slices.Contains(heights, height) {
+			heights = append(heights, height)
+		}
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(heights)))
+	return heights
+}
+
 func (v *VideoEntity) ToPrimitives() VideoPrimitives {
 	formats := make([]VideoFormatPrimitives, 0, len(v.formats))
 	for _, format := range v.formats {
@@ -151,5 +173,6 @@ func (v *VideoEntity) ToPrimitives() VideoPrimitives {
 		enums.VideosKeyEnum.VIEWS:         v.views,
 		enums.VideosKeyEnum.PUBLISHED_AT:  v.publishedAt,
 		enums.VideosKeyEnum.FORMATS:       formats,
+		enums.VideosKeyEnum.HEIGHTS:       v.GetAvailableHeights(),
 	}
 }

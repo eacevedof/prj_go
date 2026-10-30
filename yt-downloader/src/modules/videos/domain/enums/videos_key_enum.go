@@ -33,6 +33,7 @@ var VideosKeyEnum = struct {
 	ERROR       string
 	ENGINE      string
 	MAX_HEIGHT  string
+	HEIGHTS     string
 }{
 	URL:      "url",
 	FORMAT:   "format",
@@ -65,4 +66,5 @@ var VideosKeyEnum = struct {
 	ERROR:       "error",
 	ENGINE:      "engine",
 	MAX_HEIGHT:  "max_height",
+	HEIGHTS:     "heights",
 }

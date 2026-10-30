@@ -4,6 +4,12 @@ La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/
 (única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/eaf-ytdl-<versión>.exe`).
 Lo más nuevo arriba.
 
+## 0.5.0 — 2026-10-30
+
+1. Menú: al descargar un vídeo se lee su info y se listan las **resoluciones reales** (1080p, 720p, 480p…) para elegir una.
+2. `--quality` admite alturas `<N>p` (360p… 2160p); `best` ya no tiene tope (la mayor que exista, 4K incluido). `video-info` devuelve `heights`.
+3. yt-dlp se **actualiza solo**: una vez al día compara la versión instalada con la última release y, si hay nueva, la baja verificada por SHA-256.
+
 ## 0.4.0 — 2026-10-30
 
 1. Motor **yt-dlp** (`APP_ENGINE=ytdlp`, defecto): vídeo hasta 1080p (H.264 + AAC unidos con ffmpeg) y audio m4a sin ffmpeg.

@@ -55,9 +55,9 @@ func (v *VideoFieldsValidator) getFormatAndQualityErrors(format string, quality 
 			enums.VideosMessageEnum.INVALID_FORMAT_ALLOWED_X, strings.Join(enums.GetVideoFormats(), ", "),
 		))
 	}
-	if !slices.Contains(enums.GetVideoQualities(), quality) {
+	if !enums.IsValidQuality(quality) {
 		errors = append(errors, enums.VideosKeyEnum.QUALITY+": "+config.Tr(
-			enums.VideosMessageEnum.INVALID_QUALITY_ALLOWED_X, strings.Join(enums.GetVideoQualities(), ", "),
+			enums.VideosMessageEnum.INVALID_QUALITY_ALLOWED_X, strings.Join(enums.GetVideoQualities(), ", ")+", <N>p",
 		))
 	}
 	return errors
