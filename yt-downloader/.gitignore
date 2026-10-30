@@ -4,6 +4,9 @@
 .env
 .env.local
 
+# binarios de terceros descargados por la app (yt-dlp)
+tools/
+
 # binarios (go build -o build/...)
 build/*
 !build/.gitkeep

@@ -4,6 +4,13 @@ La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/
 (única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/eaf-ytdl-<versión>.exe`).
 Lo más nuevo arriba.
 
+## 0.4.0 — 2026-10-30
+
+1. Motor **yt-dlp** (`APP_ENGINE=ytdlp`, defecto): vídeo hasta 1080p (H.264 + AAC unidos con ffmpeg) y audio m4a sin ffmpeg.
+   El binario oficial se descarga solo a `tools\` y se verifica contra el `SHA2-256SUMS` de la release.
+2. Nueva calidad `hd1080`; `best` = hasta 1080p. Sin ffmpeg el vídeo se limita al progresivo (360p/720p) con aviso.
+3. `APP_ENGINE=native` conserva el motor anterior (solo progresivo, sin binarios externos).
+
 ## 0.3.0 — 2026-10-30
 
 1. Nombres de fichero en slug ASCII + fecha-hora (componente `slugger`): "La Niña de mis Ojos" → `la-nina-de-mis-ojos-20261030-153045.mp4`; la carpeta de una playlist es el slug de su título.

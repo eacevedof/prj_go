@@ -103,6 +103,7 @@ func appbootSetdefaultenvkeys() {
 		enums.AppEnvKeyEnum.APP_DEBUG:          enums.AppEnvDefaultEnum.APP_DEBUG,
 		enums.AppEnvKeyEnum.APP_NAME:           enums.AppEnvDefaultEnum.APP_NAME,
 		enums.AppEnvKeyEnum.APP_DEFAULT_LANG:   enums.AppEnvDefaultEnum.APP_DEFAULT_LANG,
+		enums.AppEnvKeyEnum.APP_ENGINE:         enums.AppEnvDefaultEnum.APP_ENGINE,
 		enums.AppEnvKeyEnum.APP_LOG_PATH:       boot.BootPathsEnum.PATH_LOGS,
 		enums.AppEnvKeyEnum.APP_DOWNLOADS_PATH: boot.BootPathsEnum.PATH_DOWNLOADS,
 	}

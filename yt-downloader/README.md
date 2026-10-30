@@ -4,13 +4,15 @@
 
 ### 1.1 Solo usarlo en Windows (sin instalar nada)
 
-1. Descargar `eaf-ytdl-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `eaf-ytdl-0.3.0.exe`) de la página de
+1. Descargar `eaf-ytdl-x.y.z.exe` (la `x.y.z` es la versión, p. ej. `eaf-ytdl-0.4.0.exe`) de la página de
    **Releases** del repo: <https://github.com/eacevedof/prj_go/releases> (el asset de la release `yt-downloader-vx.y.z`),
    y guardarlo en cualquier carpeta, p. ej. `C:\eaf-ytdl\`. Si no hay release, pedírselo a quien compila (§1.3).
 2. Doble clic (o ejecutarlo sin argumentos): se abre un **menú** que pregunta qué hacer (video, info, playlist, audio,
    playlist en audio), la URL y la calidad. No hace falta `.env`: los vídeos caen en `downloads\` junto al `.exe` y los
    logs en `logs\`. La cabecera del menú muestra la versión y su fecha.
-3. Solo para audio (`m4a`) hace falta `ffmpeg` en el PATH: `winget install Gyan.FFmpeg`.
+3. La primera descarga baja sola el motor **yt-dlp** (binario oficial, ~24 MB, verificado por SHA-256) a `tools\`
+   junto al `.exe`. Para vídeo por encima de 360p hace falta `ffmpeg` en el PATH (une vídeo y audio):
+   `winget install Gyan.FFmpeg`. Sin ffmpeg: vídeo a 360p y audio `m4a` sí funcionan.
 
 ### 1.2 Compilar en Windows (sin `make`)
 
@@ -70,7 +72,7 @@ Sin `--output` el fichero cae en `storage/downloads` del repo, o en `downloads\`
 del repo (`APP_DOWNLOADS_PATH`, §2.3). El nombre es siempre un **slug ASCII con fecha-hora**: el título "La Niña de
 mis Ojos" (o el `--filename` que se pase) se guarda como `la-nina-de-mis-ojos-20261030-153045.mp4`; la carpeta de una
 playlist es el slug de su título. Todo error queda además en `<downloads>/error-YYYYMMDD.log`. Con `--output` la
-carpeta se crea si no existe. Sin ffmpeg el `--format=video` funciona; el `--format=audio` no.
+carpeta se crea si no existe. Sin ffmpeg: vídeo solo hasta 360p (progresivo) y audio `m4a` sí; con ffmpeg, hasta 1080p.
 
 ### 2.2 Comandos y opciones
 
@@ -78,9 +80,9 @@ carpeta se crea si no existe. Sin ffmpeg el `--format=video` funciona; el `--for
 |---|---|---|
 | 1 | `menu` | — · menú interactivo; es lo que arranca sin argumentos |
 | 2 | `help` | — · lista los comandos; la cabecera lleva la versión |
-| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.3.0 (2026-10-30)`) |
+| 3 | `version` | — · versión y fecha (`eaf-yt-dl v0.4.0 (2026-10-30)`) |
 | 4 | `video-info --url=<url o id>` | — · devuelve JSON con título, duración y formatos |
-| 5 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd720\|medium` (defecto `best`) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` (se pasa a slug + fecha-hora) |
+| 5 | `video-download --url=<url o id>` | `--format=video\|audio` (defecto `video`) · `--quality=best\|hd1080\|hd720\|medium` (defecto `best` = hasta 1080p) · `--output=<carpeta>` (defecto `APP_DOWNLOADS_PATH`, §2.3; se crea si no existe) · `--filename=<nombre sin extensión>` (se pasa a slug + fecha-hora) |
 | 6 | `playlist-download --url=<url o id de playlist>` | `--format`, `--quality` y `--output` como en `video-download`. Descarga todos los vídeos, en orden, en la subcarpeta `<output>/<título de la playlist>`; si uno falla (privado, borrado, recortado) lo anota en `failed` y sigue. Exit 1 solo si no baja ninguno |
 
 `--url` acepta la URL completa (`watch?v=`, `youtu.be/`) o el id a secas. Salida: JSON por stdout (apto para `jq`),
@@ -101,24 +103,30 @@ El `.env` es **opcional**: toda variable tiene un valor por defecto. Se lee `<ra
 | 4 | `APP_DEFAULT_LANG` | `es` | idioma por defecto (reservado) |
 | 5 | `APP_DOWNLOADS_PATH` | repo: `storage/downloads` · exe: `downloads/` junto al `.exe` | carpeta de descargas; `--output` la sobrescribe |
 | 6 | `APP_LOG_PATH` | repo: `storage/logs` · exe: `logs/` junto al `.exe` | logs `YYYY-MM-DD-<tipo>.log` |
+| 7 | `APP_ENGINE` | `ytdlp` | motor de descarga: `ytdlp` (hasta 1080p) o `native` (solo mp4 progresivo 360p/720p, sin binarios externos) |
 
 ## 3 - cómo descarga (y por qué así)
 
-1. Metadatos y formatos con `kkdai/youtube` (cliente ANDROID_VR).
-2. `--format=video`: el mp4 **progresivo** (video+audio en un fichero, itag 18/22) con el cliente ANDROID. Con
-   ANDROID_VR responde 403.
-3. `--format=audio`: el mismo mp4 progresivo y se extrae la pista AAC con **ffmpeg** (`-acodec copy`, sin recodificar)
-   a `.m4a`; el mp4 intermedio se borra. Requiere `ffmpeg` en el PATH.
-4. No se usan las pistas **adaptativas** (audio solo, 1080p sin audio): YouTube las corta con 403 pasado ~1 MB en todos
-   los clientes de la librería (verificado 2026-10-29). Por eso la calidad máxima real es la del progresivo (360p/720p).
-5. Hay vídeos cuyo progresivo llega **sin `content_length`** y YouTube sirve solo ~200 KB con la cabecera mp4 de la
-   duración entera (ningún cliente de la librería lo da completo, verificado 2026-10-29). Se detecta comparando con
-   `bitrate × duración` y se devuelve el error `was cut by YouTube` en vez de un fichero inservible; en una playlist
-   ese vídeo queda en `failed`.
-6. `playlist-download` lee la lista (id + título de cada vídeo) y delega cada uno en la misma descarga de
-   `video-download`, secuencialmente.
+1. Metadatos y formatos (título, duración, itags) siempre con la librería Go `kkdai/youtube` (cliente ANDROID_VR).
+2. **Motor `ytdlp`** (defecto): la descarga la hace el binario oficial [yt-dlp](https://github.com/yt-dlp/yt-dlp).
+   Si no está en `tools\`, junto al `.exe` ni en el PATH, se descarga de su última release de GitHub junto con el
+   fichero `SHA2-256SUMS` y **solo se guarda si el SHA-256 coincide** con el publicado. yt-dlp resuelve lo que la
+   librería Go no puede: el reto JavaScript y el PO token que YouTube exige para las pistas **adaptativas**.
+3. Qué son las adaptativas: YouTube publica cada vídeo como un mp4 **progresivo** (vídeo+audio ya mezclados, solo
+   360p y a veces 720p: itag 18/22) y como pistas **adaptativas** separadas (vídeo solo 144p…4K, audio solo). El
+   reproductor mezcla las adaptativas al vuelo; para tener 720p/1080p en un fichero hay que bajar las dos y unirlas.
+4. `--format=video` con ffmpeg: mejor vídeo H.264 hasta la altura de `--quality` (`best`/`hd1080` 1080p · `hd720` ·
+   `medium` 360p) + mejor audio m4a, unidos en mp4 por ffmpeg. Sin ffmpeg: solo el progresivo (360p/720p) y se avisa.
+5. `--format=audio`: la mejor pista de audio m4a (AAC) directamente; no hace falta ffmpeg.
+6. **Motor `native`** (`APP_ENGINE=native`, o si yt-dlp no se pudo obtener): solo el mp4 progresivo con el cliente
+   ANDROID; las adaptativas dan 403 pasado ~1 MB en todos los clientes de la librería (verificado 2026-10-29). Audio
+   = progresivo + extracción AAC con ffmpeg. Hay progresivos **sin `content_length`** que YouTube recorta a ~200 KB:
+   se detecta comparando con `bitrate × duración` y falla con `was cut by YouTube`.
+7. `playlist-download` lee la lista (id + título) con la librería Go y delega cada vídeo en `video-download`,
+   secuencialmente, con el motor que toque.
 
 ## 4 - dependencias
 
-- Go 1.26 · `github.com/kkdai/youtube/v2`
-- `ffmpeg` solo para `--format=audio` (Windows: `winget install Gyan.FFmpeg`).
+- Go 1.26 · `github.com/kkdai/youtube/v2` (metadatos y motor `native`).
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) (motor `ytdlp`): se descarga solo a `tools\` (gitignored), verificado por SHA-256.
+- `ffmpeg` para vídeo por encima de 360p con `ytdlp` y para audio con `native` (Windows: `winget install Gyan.FFmpeg`).

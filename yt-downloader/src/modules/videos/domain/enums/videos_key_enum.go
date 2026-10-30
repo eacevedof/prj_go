@@ -31,6 +31,8 @@ var VideosKeyEnum = struct {
 	DOWNLOADED  string
 	FAILED      string
 	ERROR       string
+	ENGINE      string
+	MAX_HEIGHT  string
 }{
 	URL:      "url",
 	FORMAT:   "format",
@@ -61,4 +63,6 @@ var VideosKeyEnum = struct {
 	DOWNLOADED:  "downloaded",
 	FAILED:      "failed",
 	ERROR:       "error",
+	ENGINE:      "engine",
+	MAX_HEIGHT:  "max_height",
 }

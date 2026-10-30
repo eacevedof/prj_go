@@ -13,7 +13,7 @@ import (
 // Version de la app: la muestran el menu, `version` y `help`, y da nombre al instalable (make dist ->
 // build/dist/eaf-ytdl-<APP_VERSION>.exe). Al subirla, anotar el cambio en changelog.md.
 const (
-	APP_VERSION        = "0.3.0"
+	APP_VERSION        = "0.4.0"
 	APP_VERSION_UPDATE = "2026-10-30"
 )
 
@@ -47,6 +47,11 @@ func (e *EnvironmentReaderRawRepository) GetAppName() string {
 
 func (e *EnvironmentReaderRawRepository) GetDefaultLang() string {
 	return e.get(enums.AppEnvKeyEnum.APP_DEFAULT_LANG)
+}
+
+// IsYtDlpEngine APP_ENGINE=ytdlp (defecto): descargas con el binario yt-dlp; cualquier otro valor, motor nativo.
+func (e *EnvironmentReaderRawRepository) IsYtDlpEngine() bool {
+	return e.get(enums.AppEnvKeyEnum.APP_ENGINE) == "ytdlp"
 }
 
 func (e *EnvironmentReaderRawRepository) GetLogPath() string {

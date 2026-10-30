@@ -39,14 +39,15 @@ var menuOptions = []menuOption{
 	{label: "Download a playlist as audio (m4a) - ffmpeg must be installed first (*)", alias: "playlist-download", format: "audio"},
 }
 
-// qualityOptions valor del parametro --quality y su explicacion. Solo hay progresivo (ver README §3): 720p como mucho.
+// qualityOptions valor del parametro --quality y su explicacion (motor yt-dlp: altura maxima).
 var qualityOptions = []struct {
 	value string
 	label string
 }{
-	{value: "best", label: "best (the highest available: 720p or 360p, depends on the video)"},
-	{value: "hd720", label: "hd720 (720p if the video has it)"},
-	{value: "medium", label: "medium (360p, smaller file)"},
+	{value: "best", label: "best (up to 1080p; needs ffmpeg above 360p)"},
+	{value: "hd1080", label: "hd1080 (1080p if the video has it)"},
+	{value: "hd720", label: "hd720 (720p)"},
+	{value: "medium", label: "medium (360p, smaller file, no ffmpeg needed)"},
 }
 
 const ffmpegDownloadUrl = "https://www.gyan.dev/ffmpeg/builds/"

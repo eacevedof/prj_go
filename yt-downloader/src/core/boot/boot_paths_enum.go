@@ -9,11 +9,13 @@ import (
 //   - REPO (hay go.mod subiendo desde el cwd): raiz = esa carpeta; descargas y logs en storage/.
 //   - EXE EMPAQUETADO (no hay go.mod): raiz = carpeta del ejecutable; descargas en <exe>/downloads y logs en
 //     <exe>/logs, para que quien solo tiene el .exe no configure nada.
+//   - PATH_TOOLS (<raiz>/tools): binarios de terceros que la app descarga (yt-dlp). Gitignored.
 var BootPathsEnum = func() struct {
 	PATH_ROOT      string
 	PATH_SRC       string
 	PATH_LOGS      string
 	PATH_DOWNLOADS string
+	PATH_TOOLS     string
 	IS_PACKAGED    bool
 } {
 	pathRoot, isPackaged := getPathRoot()
@@ -28,12 +30,14 @@ var BootPathsEnum = func() struct {
 		PATH_SRC       string
 		PATH_LOGS      string
 		PATH_DOWNLOADS string
+		PATH_TOOLS     string
 		IS_PACKAGED    bool
 	}{
 		PATH_ROOT:      pathRoot,
 		PATH_SRC:       filepath.Join(pathRoot, "src"),
 		PATH_LOGS:      pathLogs,
 		PATH_DOWNLOADS: pathDownloads,
+		PATH_TOOLS:     filepath.Join(pathRoot, "tools"),
 		IS_PACKAGED:    isPackaged,
 	}
 }()

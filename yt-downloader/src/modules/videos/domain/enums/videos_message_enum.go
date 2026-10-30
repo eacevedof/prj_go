@@ -15,6 +15,8 @@ var VideosMessageEnum = struct {
 	PLAYLIST_X_IS_EMPTY           string
 	PLAYLIST_X_NOTHING_DOWNLOADED string
 	DOWNLOAD_X_TRUNCATED          string
+	YTDLP_NOT_AVAILABLE_X         string
+	FFMPEG_NEEDED_FOR_QUALITY_X   string
 }{
 	FFMPEG_NOT_AVAILABLE:          "ffmpeg is required to extract the audio track and it is not in PATH",
 	FIELD_IS_REQUIRED:             "field is required",
@@ -30,4 +32,6 @@ var VideosMessageEnum = struct {
 	PLAYLIST_X_IS_EMPTY:           "Playlist {0} has no videos",
 	PLAYLIST_X_NOTHING_DOWNLOADED: "Playlist {0}: none of the {1} videos could be downloaded",
 	DOWNLOAD_X_TRUNCATED:          "Download of video {0} was cut by YouTube: {1} of {2} bytes",
+	YTDLP_NOT_AVAILABLE_X:         "yt-dlp engine is not available ({0}); falling back to the progressive mp4 (360p/720p)",
+	FFMPEG_NEEDED_FOR_QUALITY_X:   "ffmpeg is required to merge video and audio above 360p and it is not in PATH; got {0}",
 }
