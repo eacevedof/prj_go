@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"yt-downloader-go/src/core/boot"
 	"yt-downloader-go/src/modules/shared/infrastructure/traits"
 )
 
@@ -24,7 +25,7 @@ func (p *progressPrinter) Reset() {
 
 func (p *progressPrinter) Print(read int64, total int64) {
 	if total <= 0 {
-		fmt.Fprintf(os.Stderr, "\r  %s", getHumanBytes(read))
+		fmt.Fprintf(os.Stderr, "\r  %s%s", getHumanBytes(read), getClearToEndOfLine())
 		return
 	}
 	percent := int(read * 100 / total)
@@ -32,7 +33,16 @@ func (p *progressPrinter) Print(read int64, total int64) {
 		return
 	}
 	p.lastPercent = percent
-	fmt.Fprintf(os.Stderr, "\r  %s", p.GetGreen(fmt.Sprintf("%3d%% %s / %s", percent, getHumanBytes(read), getHumanBytes(total))))
+	fmt.Fprintf(os.Stderr, "\r  %s%s", p.GetGreen(fmt.Sprintf("%3d%% %s / %s", percent, getHumanBytes(read), getHumanBytes(total))), getClearToEndOfLine())
+}
+
+// getClearToEndOfLine borra el resto de la linea tras \r: si antes se pinto una mas larga (p. ej. sin total) no quedan
+// restos ("8.8 MBMB"). Sin soporte ANSI, unos espacios.
+func getClearToEndOfLine() string {
+	if boot.AreColorsEnabled() {
+		return "\033[K"
+	}
+	return "          "
 }
 
 func getHumanBytes(bytes int64) string {

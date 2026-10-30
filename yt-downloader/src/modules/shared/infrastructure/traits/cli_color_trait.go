@@ -49,6 +49,15 @@ func (t CliColorTrait) GetBlue(text string) string {
 	return t.paint("\033[94m", text)
 }
 
+// EchoOrange/GetOrange naranja (256 colores, 208): lo que la app pregunta al usuario en el menu.
+func (t CliColorTrait) EchoOrange(text string) {
+	fmt.Println(t.GetOrange(text))
+}
+
+func (t CliColorTrait) GetOrange(text string) string {
+	return t.paint("\033[38;5;208m", text)
+}
+
 func (t CliColorTrait) EchoWhite(text string) {
 	fmt.Println(t.GetWhite(text))
 }

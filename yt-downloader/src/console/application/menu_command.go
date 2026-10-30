@@ -12,7 +12,7 @@ import (
 
 // MenuCommand ./console menu (o sin argumentos, o doble clic en el .exe): pregunta que hacer y los datos minimos
 // (url, calidad) y lanza el comando de consola correspondiente. Pensado para quien no monta comandos a mano.
-// Los textos van en castellano; los valores de los parametros (video|audio, best|hd720|medium) siempre en ingles.
+// Todo el dialogo va en ingles; lo que pregunta la app se pinta en naranja.
 type MenuCommand struct {
 	commands.AbstractConsoleCommand
 	commandConfigs []CommandConfig
@@ -32,14 +32,22 @@ type menuOption struct {
 type commandExit struct{ code int }
 
 var menuOptions = []menuOption{
-	{label: "Descargar un video (mp4)", alias: "video-download", format: "video", asksQuality: true, asksFilename: true},
-	{label: "Ver la informacion de un video", alias: "video-info"},
-	{label: "Descargar una playlist en video (mp4)", alias: "playlist-download", format: "video", asksQuality: true},
-	{label: "Descargar solo el audio de un video (m4a) - antes debes tener instalado ffmpeg (*)", alias: "video-download", format: "audio", asksFilename: true},
-	{label: "Descargar una playlist en audio (m4a) - antes debes tener instalado ffmpeg (*)", alias: "playlist-download", format: "audio"},
+	{label: "Download a video (mp4)", alias: "video-download", format: "video", asksQuality: true, asksFilename: true},
+	{label: "Show video info", alias: "video-info"},
+	{label: "Download a playlist as video (mp4)", alias: "playlist-download", format: "video", asksQuality: true},
+	{label: "Download only the audio of a video (m4a) - ffmpeg must be installed first (*)", alias: "video-download", format: "audio", asksFilename: true},
+	{label: "Download a playlist as audio (m4a) - ffmpeg must be installed first (*)", alias: "playlist-download", format: "audio"},
 }
 
-var qualityOptions = []string{"best", "hd720", "medium"}
+// qualityOptions valor del parametro --quality y su explicacion. Solo hay progresivo (ver README §3): 720p como mucho.
+var qualityOptions = []struct {
+	value string
+	label string
+}{
+	{value: "best", label: "best (the highest available: 720p or 360p, depends on the video)"},
+	{value: "hd720", label: "hd720 (720p if the video has it)"},
+	{value: "medium", label: "medium (360p, smaller file)"},
+}
 
 const ffmpegDownloadUrl = "https://www.gyan.dev/ffmpeg/builds/"
 
@@ -57,18 +65,18 @@ func (c *MenuCommand) Run() {
 
 	for {
 		c.printMenu()
-		choice := c.ask("Opcion", "0")
+		choice := c.ask("Option", "0")
 		if choice == "0" || choice == "" {
 			return
 		}
 		optionIndex := -1
 		if _, err := fmt.Sscanf(choice, "%d", &optionIndex); err != nil || optionIndex < 1 || optionIndex > len(menuOptions) {
-			c.EchoRed("Opcion no valida")
+			c.EchoRed("Invalid option")
 			continue
 		}
 		c.runOption(menuOptions[optionIndex-1])
 		fmt.Println()
-		c.ask("Pulsa Enter para volver al menu", "")
+		c.ask("Press Enter to go back to the menu", "")
 	}
 }
 
@@ -76,21 +84,22 @@ func (c *MenuCommand) printMenu() {
 	environment := configuration.GetInstance()
 	fmt.Println()
 	c.EchoBlue(fmt.Sprintf("%s v%s (%s)", environment.GetAppName(), environment.GetAppVersion(), environment.GetAppVersionUpdate()))
-	fmt.Println("Las descargas van a: " + c.GetYellow(environment.GetDownloadsPath()))
+	fmt.Println(c.GetOrange("Downloads folder: ") + c.GetYellow(environment.GetDownloadsPath()))
 	fmt.Println()
+	c.EchoOrange("What do you want to do?")
 	for i, option := range menuOptions {
 		fmt.Printf("  %s) %s\n", c.GetGreen(fmt.Sprint(i+1)), option.label)
 	}
-	fmt.Printf("  %s) Salir\n", c.GetGreen("0"))
+	fmt.Printf("  %s) Exit\n", c.GetGreen("0"))
 	fmt.Println()
-	fmt.Println("  (*) ffmpeg: en PowerShell `winget install Gyan.FFmpeg`, o descargarlo de " + ffmpegDownloadUrl + " y poner su carpeta bin en el PATH")
+	fmt.Println("  (*) ffmpeg: in PowerShell run `winget install Gyan.FFmpeg`, or download it from " + ffmpegDownloadUrl + " and add its bin folder to the PATH")
 	fmt.Println()
 }
 
 func (c *MenuCommand) runOption(option menuOption) {
 	url := ""
 	for url == "" {
-		url = c.ask("Pega la URL de YouTube (o el id)", "")
+		url = c.ask("Paste the YouTube URL (or the video/playlist id)", "")
 	}
 	input := []string{"--url=" + url}
 	if option.format != "" {
@@ -100,7 +109,7 @@ func (c *MenuCommand) runOption(option menuOption) {
 		input = append(input, "--quality="+c.askQuality())
 	}
 	if option.asksFilename {
-		if filename := c.ask("Nombre del fichero (Enter = el titulo del video)", ""); filename != "" {
+		if filename := c.ask("File name (Enter = the video title)", ""); filename != "" {
 			input = append(input, "--filename="+filename)
 		}
 	}
@@ -123,27 +132,29 @@ func (c *MenuCommand) runOption(option menuOption) {
 }
 
 func (c *MenuCommand) askQuality() string {
-	fmt.Println("Calidad: 1) best (la mejor disponible)  2) hd720  3) medium (360p, ocupa menos)")
+	fmt.Println()
+	c.EchoOrange("Quality?")
+	for i, quality := range qualityOptions {
+		fmt.Printf("  %s) %s\n", c.GetGreen(fmt.Sprint(i+1)), quality.label)
+	}
 	for {
-		choice := c.ask("Calidad", "1")
-		switch choice {
-		case "1", "":
-			return qualityOptions[0]
-		case "2":
-			return qualityOptions[1]
-		case "3":
-			return qualityOptions[2]
+		choice := c.ask("Quality", "1")
+		for i, quality := range qualityOptions {
+			if choice == fmt.Sprint(i+1) {
+				return quality.value
+			}
 		}
-		c.EchoRed("Opcion no valida")
+		c.EchoRed("Invalid option")
 	}
 }
 
-// ask pregunta por stdout y devuelve la linea sin espacios; Enter vacio = defaultValue. EOF (consola cerrada) = "0".
+// ask pregunta (en naranja) por stdout y devuelve la linea sin espacios; Enter vacio = defaultValue. EOF (consola
+// cerrada) = "0".
 func (c *MenuCommand) ask(question string, defaultValue string) string {
 	if defaultValue != "" {
-		fmt.Printf("%s [%s]: ", question, defaultValue)
+		fmt.Print(c.GetOrange(fmt.Sprintf("%s [%s]: ", question, defaultValue)))
 	} else {
-		fmt.Printf("%s: ", question)
+		fmt.Print(c.GetOrange(question + ": "))
 	}
 	line, err := c.reader.ReadString('\n')
 	if err != nil && line == "" {

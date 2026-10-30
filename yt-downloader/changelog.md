@@ -4,6 +4,11 @@ La versión es `APP_VERSION` en `src/modules/shared/infrastructure/repositories/
 (única fuente: la muestran `menu`, `help` y `version`, y da nombre a `build/dist/eaf-ytdl-<versión>.exe`).
 Lo más nuevo arriba.
 
+## 0.2.2 — 2026-10-30
+
+1. Menú entero en inglés; las preguntas de la app en naranja; las calidades en vertical, explicando qué da cada una.
+2. Fix: restos en la línea de progreso (`8.8 MBMB`) al pasar de total desconocido a conocido.
+
 ## 0.2.1 — 2026-10-30
 
 1. Fix: colores ANSI activados en el conhost clásico (doble clic en el `.exe`); sin color si la terminal no los soporta (antes salían `←[94m`).
